@@ -1,1 +1,6 @@
-<Solution />
+<Solution>
+  <Project Path="D:/HomeworkProject/QLBanHang/QLBanHang.BUS/QLBanHang.BUS.csproj" Id="b224ca65-e4ca-4bb9-bdb6-70a682878f83" />
+  <Project Path="D:/HomeworkProject/QLBanHang/QLBanHang.DAL/QLBanHang.DAL.csproj" Id="490f5402-3b0c-499f-abc0-714f83e39b70" />
+  <Project Path="D:/HomeworkProject/QLBanHang/QLBanHang.DTO/QLBanHang.DTO.csproj" Id="cb4dc061-ec57-4268-8e6b-b37a42f71df0" />
+  <Project Path="D:/HomeworkProject/QLBanHang/QLBanHang.GUI/QLBanHang.GUI.csproj" Id="6ba249f8-b4a4-4ccd-b8a2-c6a7c65a0a41" />
+</Solution>
