@@ -46,6 +46,7 @@
             this.label3 = new System.Windows.Forms.Label();
             this.label2 = new System.Windows.Forms.Label();
             this.dgvSanPham = new System.Windows.Forms.DataGridView();
+            this.chkLocTonKho = new System.Windows.Forms.CheckBox();
             this.groupBox1.SuspendLayout();
             ((System.ComponentModel.ISupportInitialize)(this.dgvSanPham)).BeginInit();
             this.SuspendLayout();
@@ -76,9 +77,11 @@
             this.button1.TabIndex = 4;
             this.button1.Text = "Tìm";
             this.button1.UseVisualStyleBackColor = true;
+            this.button1.Click += new System.EventHandler(this.btnTimKiem_Click);
             // 
             // groupBox1
             // 
+            this.groupBox1.Controls.Add(this.chkLocTonKho);
             this.groupBox1.Controls.Add(this.btnLamMoi);
             this.groupBox1.Controls.Add(this.btnXoa);
             this.groupBox1.Controls.Add(this.btnSua);
@@ -92,12 +95,11 @@
             this.groupBox1.Controls.Add(this.label4);
             this.groupBox1.Controls.Add(this.label3);
             this.groupBox1.Controls.Add(this.label2);
-            this.groupBox1.Location = new System.Drawing.Point(93, 65);
+            this.groupBox1.Location = new System.Drawing.Point(13, 69);
             this.groupBox1.Name = "groupBox1";
-            this.groupBox1.Size = new System.Drawing.Size(583, 202);
+            this.groupBox1.Size = new System.Drawing.Size(775, 202);
             this.groupBox1.TabIndex = 5;
             this.groupBox1.TabStop = false;
-            this.groupBox1.Text = "groupBox1";
             // 
             // btnLamMoi
             // 
@@ -107,6 +109,7 @@
             this.btnLamMoi.TabIndex = 15;
             this.btnLamMoi.Text = "Làm mới";
             this.btnLamMoi.UseVisualStyleBackColor = true;
+            this.btnLamMoi.Click += new System.EventHandler(this.btnLamMoi_Click);
             // 
             // btnXoa
             // 
@@ -116,6 +119,7 @@
             this.btnXoa.TabIndex = 14;
             this.btnXoa.Text = "Xoá";
             this.btnXoa.UseVisualStyleBackColor = true;
+            this.btnXoa.Click += new System.EventHandler(this.btnXoa_Click);
             // 
             // btnSua
             // 
@@ -125,6 +129,7 @@
             this.btnSua.TabIndex = 13;
             this.btnSua.Text = "Sửa";
             this.btnSua.UseVisualStyleBackColor = true;
+            this.btnSua.Click += new System.EventHandler(this.btnSua_Click);
             // 
             // btnThem
             // 
@@ -134,6 +139,7 @@
             this.btnThem.TabIndex = 8;
             this.btnThem.Text = "Thêm";
             this.btnThem.UseVisualStyleBackColor = true;
+            this.btnThem.Click += new System.EventHandler(this.btnThem_Click);
             // 
             // chkTrangThai
             // 
@@ -229,6 +235,18 @@
             this.dgvSanPham.RowTemplate.Height = 28;
             this.dgvSanPham.Size = new System.Drawing.Size(775, 165);
             this.dgvSanPham.TabIndex = 8;
+            this.dgvSanPham.CellClick += new System.Windows.Forms.DataGridViewCellEventHandler(this.dgvSanPham_CellClick);
+            // 
+            // chkLocTonKho
+            // 
+            this.chkLocTonKho.AutoSize = true;
+            this.chkLocTonKho.Location = new System.Drawing.Point(583, 33);
+            this.chkLocTonKho.Name = "chkLocTonKho";
+            this.chkLocTonKho.Size = new System.Drawing.Size(210, 24);
+            this.chkLocTonKho.TabIndex = 16;
+            this.chkLocTonKho.Text = "Chỉ tìm hàng còn tồn kho";
+            this.chkLocTonKho.UseVisualStyleBackColor = true;
+            this.chkLocTonKho.CheckedChanged += new System.EventHandler(this.chkLocTonKho_CheckedChanged);
             // 
             // frmSanPham
             // 
@@ -242,6 +260,7 @@
             this.Controls.Add(this.txtTimKiem);
             this.Name = "frmSanPham";
             this.Text = "Form1";
+            this.Load += new System.EventHandler(this.frmSanPham_Load);
             this.groupBox1.ResumeLayout(false);
             this.groupBox1.PerformLayout();
             ((System.ComponentModel.ISupportInitialize)(this.dgvSanPham)).EndInit();
@@ -269,6 +288,7 @@
         private System.Windows.Forms.CheckBox chkTrangThai;
         private System.Windows.Forms.TextBox txtSoLuong;
         private System.Windows.Forms.DataGridView dgvSanPham;
+        private System.Windows.Forms.CheckBox chkLocTonKho;
     }
 }
 
