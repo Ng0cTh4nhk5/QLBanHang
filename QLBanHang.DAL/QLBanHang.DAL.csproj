@@ -54,6 +54,7 @@
       <DesignTime>True</DesignTime>
       <DependentUpon>QLBanHangContext.dbml</DependentUpon>
     </Compile>
+    <Compile Include="SanPhamDAL.cs" />
   </ItemGroup>
   <ItemGroup>
     <ProjectReference Include="..\QLBanHang.DTO\QLBanHang.DTO.csproj">
