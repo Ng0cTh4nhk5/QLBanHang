@@ -43,11 +43,35 @@
   <ItemGroup>
     <Compile Include="ChiTietHoaDonDTO.cs" />
     <Compile Include="Class1.cs" />
+    <Compile Include="dsHoaDon.cs">
+      <DependentUpon>dsHoaDon.xsd</DependentUpon>
+    </Compile>
+    <Compile Include="dsHoaDon.Designer.cs">
+      <AutoGen>True</AutoGen>
+      <DesignTime>True</DesignTime>
+      <DependentUpon>dsHoaDon.xsd</DependentUpon>
+    </Compile>
     <Compile Include="HoaDonDTO.cs" />
     <Compile Include="KhachHangDTO.cs" />
     <Compile Include="NhanVienDTO.cs" />
     <Compile Include="Properties\AssemblyInfo.cs" />
     <Compile Include="SanPhamDTO.cs" />
+  </ItemGroup>
+  <ItemGroup>
+    <None Include="dsHoaDon.xsc">
+      <DependentUpon>dsHoaDon.xsd</DependentUpon>
+    </None>
+    <None Include="dsHoaDon.xsd">
+      <SubType>Designer</SubType>
+      <Generator>MSDataSetGenerator</Generator>
+      <LastGenOutput>dsHoaDon.Designer.cs</LastGenOutput>
+    </None>
+    <None Include="dsHoaDon.xss">
+      <DependentUpon>dsHoaDon.xsd</DependentUpon>
+    </None>
+  </ItemGroup>
+  <ItemGroup>
+    <Folder Include="Properties\DataSources\" />
   </ItemGroup>
   <Import Project="$(MSBuildToolsPath)\Microsoft.CSharp.targets" />
 </Project>

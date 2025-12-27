@@ -44,6 +44,7 @@
             this.dgvChiTiet = new System.Windows.Forms.DataGridView();
             this.lblTongTien = new System.Windows.Forms.Label();
             this.btnLuu = new System.Windows.Forms.Button();
+            this.btnInThu = new System.Windows.Forms.Button();
             ((System.ComponentModel.ISupportInitialize)(this.dgvChiTiet)).BeginInit();
             this.SuspendLayout();
             // 
@@ -189,11 +190,22 @@
             this.btnLuu.UseVisualStyleBackColor = true;
             this.btnLuu.Click += new System.EventHandler(this.btnLuu_Click);
             // 
+            // btnInThu
+            // 
+            this.btnInThu.Location = new System.Drawing.Point(454, 468);
+            this.btnInThu.Name = "btnInThu";
+            this.btnInThu.Size = new System.Drawing.Size(186, 34);
+            this.btnInThu.TabIndex = 20;
+            this.btnInThu.Text = "IN THỬ / PREVIEW";
+            this.btnInThu.UseVisualStyleBackColor = true;
+            this.btnInThu.Click += new System.EventHandler(this.btnInThu_Click);
+            // 
             // frmHoaDon
             // 
             this.AutoScaleDimensions = new System.Drawing.SizeF(9F, 20F);
             this.AutoScaleMode = System.Windows.Forms.AutoScaleMode.Font;
             this.ClientSize = new System.Drawing.Size(799, 514);
+            this.Controls.Add(this.btnInThu);
             this.Controls.Add(this.btnLuu);
             this.Controls.Add(this.lblTongTien);
             this.Controls.Add(this.dgvChiTiet);
@@ -211,7 +223,7 @@
             this.Controls.Add(this.label1);
             this.Controls.Add(this.cboKhachHang);
             this.Name = "frmHoaDon";
-            this.Text = "frmHoaDon";
+            this.Text = "Hóa Đơn Bán Hàng";
             this.Load += new System.EventHandler(this.frmHoaDon_Load);
             ((System.ComponentModel.ISupportInitialize)(this.dgvChiTiet)).EndInit();
             this.ResumeLayout(false);
@@ -237,5 +249,7 @@
         private System.Windows.Forms.DataGridView dgvChiTiet;
         private System.Windows.Forms.Label lblTongTien;
         private System.Windows.Forms.Button btnLuu;
+        // Khai báo nút mới
+        private System.Windows.Forms.Button btnInThu;
     }
 }

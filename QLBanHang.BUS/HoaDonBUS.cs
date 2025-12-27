@@ -22,5 +22,12 @@ namespace QLBanHang.BUS
             // Gọi DAL để xử lý lưu xuống DB
             return dal.LuuHoaDon(hd, listChiTiet);
         }
+
+        // Trong class HoaDonBUS
+        public dsHoaDon LayDuLieuInHoaDon(int maHD)
+        {
+            // Gọi xuống DAL
+            return dal.LayDuLieuInHoaDon(maHD);
+        }
     }
 }

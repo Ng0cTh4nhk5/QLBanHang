@@ -18,10 +18,7 @@ namespace QLBanHang.GUI
         HoaDonBUS bus = new HoaDonBUS();
         SanPhamBUS spBUS = new SanPhamBUS();
         NhanVienBUS nvBUS = new NhanVienBUS();
-
-        // --- SỬA LỖI 1: Thêm dòng này để khởi tạo KhachHangBUS ---
         KhachHangBUS khachHangBUS = new KhachHangBUS();
-        // ---------------------------------------------------------
 
         // Danh sách tạm để chứa chi tiết hóa đơn (Giỏ hàng)
         List<ChiTietHoaDonDTO> gioHang = new List<ChiTietHoaDonDTO>();
@@ -47,19 +44,14 @@ namespace QLBanHang.GUI
 
         private void LoadCombobox()
         {
-            // --- SỬA LỖI 2: Gọi qua đối tượng 'khachHangBUS' thay vì gọi tên Class ---
+            // Load Khách hàng
             cboKhachHang.DataSource = khachHangBUS.LayDanhSachKhachHang();
-
-            // LƯU Ý QUAN TRỌNG: Kiểm tra kỹ file KhachHangDTO.cs
-            // Nếu property là 'TenKhachHang' thì sửa bên dưới thành "TenKhachHang"
-            // Nếu property là 'TenKH' thì giữ nguyên "TenKH"
-            cboKhachHang.DisplayMember = "TenKH";
+            cboKhachHang.DisplayMember = "TenKH"; // Kiểm tra kỹ DTO property name
             cboKhachHang.ValueMember = "MaKH";
-            // -------------------------------------------------------------------------
 
             // Load Nhân viên
             cboNhanVien.DataSource = nvBUS.LayDanhSachNhanVien();
-            cboNhanVien.DisplayMember = "TenNV"; // Kiểm tra lại DTO NhanVien xem là TenNV hay HoTen
+            cboNhanVien.DisplayMember = "TenNV";
             cboNhanVien.ValueMember = "MaNV";
 
             // Load Sản phẩm
@@ -71,13 +63,12 @@ namespace QLBanHang.GUI
         // Sự kiện khi chọn sản phẩm khác thì tự nhảy đơn giá tương ứng
         private void cboSanPham_SelectedIndexChanged(object sender, EventArgs e)
         {
-            // Kiểm tra null để tránh lỗi khi form mới load
             if (cboSanPham.SelectedItem == null) return;
 
             SanPhamDTO sp = cboSanPham.SelectedItem as SanPhamDTO;
             if (sp != null)
             {
-                txtDonGia.Text = sp.DonGia.ToString("N0"); // Format số cho đẹp
+                txtDonGia.Text = sp.DonGia.ToString("N0");
             }
         }
 
@@ -92,21 +83,19 @@ namespace QLBanHang.GUI
 
             SanPhamDTO spChon = cboSanPham.SelectedItem as SanPhamDTO;
 
-            // Dùng TryParse để tránh lỗi crash nếu người dùng nhập chữ
             if (!int.TryParse(txtSoLuong.Text, out int soLuongMua) || soLuongMua <= 0)
             {
                 MessageBox.Show("Số lượng phải là số nguyên dương!");
                 return;
             }
 
-            // Kiểm tra tồn kho (Giả sử DTO có trường SoLuong)
             if (spChon.SoLuong < soLuongMua)
             {
                 MessageBox.Show($"Kho chỉ còn {spChon.SoLuong} sản phẩm!");
                 return;
             }
 
-            // Kiểm tra xem sản phẩm đã có trong giỏ hàng chưa để cộng dồn (Logic nâng cao)
+            // Kiểm tra cộng dồn
             var itemTonTai = gioHang.FirstOrDefault(x => x.MaSP == spChon.MaSP);
             if (itemTonTai != null)
             {
@@ -129,18 +118,83 @@ namespace QLBanHang.GUI
 
         private void HienThiGioHang()
         {
-            // Reset DataSource để Grid cập nhật lại giao diện
             dgvChiTiet.DataSource = null;
             dgvChiTiet.DataSource = gioHang;
 
-            // Format cột đơn giá trên Grid cho đẹp (nếu cần)
-            // dgvChiTiet.Columns["DonGia"].DefaultCellStyle.Format = "N0";
+            // Format hiển thị cột nếu cần
+            if (dgvChiTiet.Columns["DonGia"] != null)
+                dgvChiTiet.Columns["DonGia"].DefaultCellStyle.Format = "N0";
 
             decimal tongTien = gioHang.Sum(ct => ct.SoLuong * ct.DonGia);
             lblTongTien.Text = "Tổng tiền: " + tongTien.ToString("N0") + " VNĐ";
         }
 
-        // Nút LƯU HÓA ĐƠN
+        private void btnInThu_Click(object sender, EventArgs e)
+        {
+            // 1. Kiểm tra dữ liệu
+            if (gioHang.Count == 0)
+            {
+                MessageBox.Show("Giỏ hàng đang trống, vui lòng chọn sản phẩm!");
+                return;
+            }
+            if (cboKhachHang.SelectedIndex == -1 || cboNhanVien.SelectedIndex == -1)
+            {
+                MessageBox.Show("Vui lòng chọn Khách hàng và Nhân viên!");
+                return;
+            }
+
+            try
+            {
+                // 2. Tạo Dataset ảo (Không cần gọi DB)
+                dsHoaDon ds = new dsHoaDon();
+
+                // --- Đổ dữ liệu Header (Thông tin chung) ---
+                // Lấy Text hiển thị trên ComboBox (Tên KH) thay vì lấy Value (Mã KH)
+                var rowHead = ds.dtHeader.NewdtHeaderRow();
+
+                rowHead.MaHoaDon = 0; // Chưa lưu nên chưa có mã, để 0 hoặc để trống
+                rowHead.NgayLap = DateTime.Now;
+                rowHead.TenKhachHang = cboKhachHang.Text;
+                rowHead.TenNhanVien = cboNhanVien.Text;
+
+                // Các trường này nếu Form chưa có ô nhập thì để trống
+                rowHead.DiaChi = "...................................";
+                rowHead.SoDienThoai = "...................................";
+
+                decimal tongTien = gioHang.Sum(x => x.SoLuong * x.DonGia);
+                rowHead.TongTien = tongTien;
+                rowHead.TongTienChu = "(Bằng chữ: ....................................................)";
+
+                ds.dtHeader.AdddtHeaderRow(rowHead);
+
+                // --- Đổ dữ liệu Detail (Danh sách hàng) ---
+                int stt = 1;
+                foreach (var item in gioHang)
+                {
+                    var rowDetail = ds.dtDetail.NewdtDetailRow();
+
+                    rowDetail.MaHoaDon = 0;
+                    rowDetail.STT = stt++;
+                    rowDetail.TenSP = item.TenSP;
+                    rowDetail.SoLuong = item.SoLuong;
+                    rowDetail.DonGia = item.DonGia;
+                    rowDetail.ThanhTien = item.SoLuong * item.DonGia;
+                    rowDetail.DonViTinh = "Cái"; // Mặc định hoặc lấy từ DTO nếu có
+
+                    ds.dtDetail.AdddtDetailRow(rowDetail);
+                }
+
+                // 3. Mở Form In với dữ liệu vừa tạo
+                frmInHoaDon f = new frmInHoaDon(ds);
+                f.ShowDialog();
+            }
+            catch (Exception ex)
+            {
+                MessageBox.Show("Lỗi tạo bản in thử: " + ex.Message);
+            }
+        }
+
+        // Nút LƯU HÓA ĐƠN (Chỉ lưu khi đã chắc chắn)
         private void btnLuu_Click(object sender, EventArgs e)
         {
             if (gioHang.Count == 0)
@@ -149,34 +203,28 @@ namespace QLBanHang.GUI
                 return;
             }
 
-            // Kiểm tra giá trị null an toàn hơn
-            if (cboKhachHang.SelectedIndex == -1)
+            if (cboKhachHang.SelectedIndex == -1 || cboNhanVien.SelectedIndex == -1)
             {
-                MessageBox.Show("Chưa chọn khách hàng!");
-                return;
-            }
-            if (cboNhanVien.SelectedIndex == -1)
-            {
-                MessageBox.Show("Chưa chọn nhân viên!");
+                MessageBox.Show("Chưa nhập đủ thông tin!");
                 return;
             }
 
-            // Tính tổng tiền
-            decimal tongTien = gioHang.Sum(ct => ct.SoLuong * ct.DonGia);
+            // Hỏi xác nhận lần cuối
+            DialogResult dr = MessageBox.Show("Bạn đã kiểm tra kỹ hóa đơn chưa? Nhấn Yes để Lưu.", "Xác nhận", MessageBoxButtons.YesNo, MessageBoxIcon.Question);
+            if (dr == DialogResult.No) return;
 
+            // Tiến hành lưu
             HoaDonDTO hd = new HoaDonDTO();
             hd.NgayLap = DateTime.Now;
-
-            // Ép kiểu an toàn từ ValueMember
             hd.MaKH = Convert.ToInt32(cboKhachHang.SelectedValue);
             hd.MaNV = Convert.ToInt32(cboNhanVien.SelectedValue);
-            hd.TongTien = tongTien;
+            hd.TongTien = gioHang.Sum(ct => ct.SoLuong * ct.DonGia);
 
             if (bus.LuuHoaDon(hd, gioHang))
             {
-                MessageBox.Show("Lưu hóa đơn thành công!");
+                MessageBox.Show("Lưu hóa đơn thành công! Kho đã được cập nhật.");
 
-                // Reset form
+                // Reset form để bán đơn mới
                 gioHang.Clear();
                 dgvChiTiet.DataSource = null;
                 lblTongTien.Text = "Tổng tiền: 0 VNĐ";
