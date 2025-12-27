@@ -9,7 +9,7 @@ namespace QLBanHang.DAL
 {
     public class NhanVienDAL
     {
-        public List<NhanVienDTO> LayDanhSachKhachHang()
+        public List<NhanVienDTO> LayDanhSachNhanVien()
         {
             using (QLBanHangContextDataContext db = new QLBanHangContextDataContext())
             {
@@ -20,6 +20,5 @@ namespace QLBanHang.DAL
                 }).ToList();
             }
         }
-        // Em cần tự tạo class KhachHangDTO bên project DTO tương tự như SanPhamDTO nhé (chỉ cần MaKH, TenKH là đủ cho ComboBox)
     }
 }
