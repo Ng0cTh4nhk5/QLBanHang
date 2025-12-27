@@ -10,23 +10,17 @@ namespace QLBanHang.BUS
 {
     public class HoaDonBUS
     {
-        HoaDonDAL hdDAL = new HoaDonDAL();
-        KhachHangDAL khDAL = new KhachHangDAL();
-        // Nhớ khai báo NhanVienDAL nhé
+        // Khởi tạo DAL
+        HoaDonDAL dal = new HoaDonDAL();
 
-        public List<KhachHangDTO> LayDanhSachKhachHang()
+        public bool LuuHoaDon(HoaDonDTO hd, List<ChiTietHoaDonDTO> listChiTiet)
         {
-            return khDAL.LayDanhSachKhachHang();
-        }
+            // Kiểm tra nghiệp vụ (Validation)
+            if (listChiTiet == null || listChiTiet.Count == 0)
+                return false;
 
-        // Em viết thêm hàm lấy Nhân viên tương tự nhé
-
-        public bool LuuHoaDon(HoaDonDTO hd, List<ChiTietHoaDonDTO> chiTiet)
-        {
-            // Kiểm tra: Phải có ít nhất 1 sản phẩm mới cho lưu
-            if (chiTiet.Count == 0) return false;
-
-            return hdDAL.LuuHoaDon(hd, chiTiet);
+            // Gọi DAL để xử lý lưu xuống DB
+            return dal.LuuHoaDon(hd, listChiTiet);
         }
     }
 }

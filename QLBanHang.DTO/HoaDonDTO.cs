@@ -10,12 +10,20 @@ namespace QLBanHang.DTO
     {
         public int MaHD { get; set; }
         public DateTime NgayLap { get; set; }
+
         public int MaNV { get; set; }
-        public string TenNV { get; set; } // Thêm tên để hiển thị cho dễ
+        public string TenNV { get; set; } // Tên nhân viên
+
         public int MaKH { get; set; }
-        public string TenKH { get; set; } // Thêm tên để hiển thị cho dễ
+        public string TenKH { get; set; } // Tên khách hàng
+
+        public decimal TongTien { get; set; }
 
         // Constructor
-        public HoaDonDTO() { NgayLap = DateTime.Now; }
+        public HoaDonDTO()
+        {
+            NgayLap = DateTime.Now;
+            TongTien = 0; // Khởi tạo giá trị mặc định
+        }
     }
 }
