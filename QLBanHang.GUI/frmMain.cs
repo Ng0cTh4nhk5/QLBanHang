@@ -1,11 +1,5 @@
 ﻿using System;
-using System.Collections.Generic;
-using System.ComponentModel;
-using System.Data;
-using System.Drawing;
-using System.Linq;
-using System.Text;
-using System.Threading.Tasks;
+using System.Linq; // Để dùng hàm kiểm tra form mở rồi hay chưa
 using System.Windows.Forms;
 
 namespace QLBanHang.GUI
@@ -17,40 +11,77 @@ namespace QLBanHang.GUI
             InitializeComponent();
         }
 
-        // Sự kiện Form Load: Chạy ngay khi Form Main hiện lên
         private void frmMain_Load(object sender, EventArgs e)
         {
-            // 1. Mở form Sản Phẩm (frmSanPham)
-            frmSanPham fSP = new frmSanPham();
-            fSP.MdiParent = this; // Đặt Form Main làm cha
-            fSP.Text = "Danh mục Sản Phẩm";
-            fSP.Show();
-
-            // 2. Mở form Hóa Đơn (frmHoaDon)
-            frmHoaDon fHD = new frmHoaDon();
-            fHD.MdiParent = this; // Đặt Form Main làm cha
-            fHD.Text = "Quản lý Hóa Đơn";
-            fHD.Show();
-
-            // 3. Tự động chia đôi màn hình dọc (Trái: SP, Phải: HD)
-            this.LayoutMdi(MdiLayout.TileVertical);
+            // Cho Form hiện giữa màn hình và to hết cỡ
+            this.WindowState = FormWindowState.Maximized;
         }
 
-        // Sự kiện khi bấm Menu "Sản Phẩm" (Nếu lỡ tắt muốn mở lại)
-        private void sanPhamToolStripMenuItem_Click(object sender, EventArgs e)
+        // --- HÀM KIỂM TRA FORM ĐÃ MỞ CHƯA (Tránh mở nhiều lần) ---
+        private Form KiemTraFormTonTai(Type formType)
         {
-            // Kiểm tra xem form đã mở chưa để tránh mở nhiều cái (Cơ bản)
-            frmSanPham f = new frmSanPham();
-            f.MdiParent = this;
-            f.Show();
+            foreach (Form f in this.MdiChildren)
+            {
+                if (f.GetType() == formType)
+                {
+                    return f; // Trả về form nếu đã tìm thấy
+                }
+            }
+            return null; // Trả về null nếu chưa mở
         }
 
-        // Sự kiện khi bấm Menu "Hóa Đơn"
-        private void hoaDonToolStripMenuItem_Click(object sender, EventArgs e)
+        // --- 1. MỞ FORM SẢN PHẨM ---
+        private void mnuSanPham_Click(object sender, EventArgs e)
         {
-            frmHoaDon f = new frmHoaDon();
-            f.MdiParent = this;
-            f.Show();
+            Form f = KiemTraFormTonTai(typeof(frmSanPham));
+            if (f != null)
+            {
+                f.Activate(); // Nếu mở rồi thì focus vào nó
+            }
+            else
+            {
+                frmSanPham fMoi = new frmSanPham();
+                fMoi.MdiParent = this; // Đặt cha là frmMain
+                fMoi.Show();
+            }
+        }
+
+        // --- 2. MỞ FORM HÓA ĐƠN ---
+        private void mnuHoaDon_Click(object sender, EventArgs e)
+        {
+            Form f = KiemTraFormTonTai(typeof(frmHoaDon));
+            if (f != null)
+            {
+                f.Activate();
+            }
+            else
+            {
+                frmHoaDon fMoi = new frmHoaDon();
+                fMoi.MdiParent = this;
+                fMoi.Show();
+            }
+        }
+
+        /*-- 3. MỞ FORM THỐNG KÊ(3 TRUY VẤN LINQ) ---*/
+        private void mnuThongKe_Click(object sender, EventArgs e)
+        {
+            Form f = KiemTraFormTonTai(typeof(frmThongKe));
+            if (f != null)
+            {
+                f.Activate();
+            }
+            else
+            {
+                frmThongKe fMoi = new frmThongKe();
+                fMoi.MdiParent = this;
+                fMoi.Show();
+            }
+        }
+
+        // Nút Thoát
+        private void mnuThoat_Click(object sender, EventArgs e)
+        {
+            Application.Exit();
         }
     }
 }
