@@ -42,7 +42,6 @@
   </ItemGroup>
   <ItemGroup>
     <Compile Include="ChiTietHoaDonDTO.cs" />
-    <Compile Include="Class1.cs" />
     <Compile Include="dsHoaDon.cs">
       <DependentUpon>dsHoaDon.xsd</DependentUpon>
     </Compile>
