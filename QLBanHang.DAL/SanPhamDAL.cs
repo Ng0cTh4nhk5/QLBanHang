@@ -1,10 +1,9 @@
 ﻿using System;
 using System.Collections.Generic;
 using System.Linq;
-using System.Text;
-using System.Threading.Tasks;
-// Nhớ using DTO để dùng được class SanPhamDTO
 using QLBanHang.DTO;
+using QLBanHang.DAL.Entities; // Sử dụng Entity mới tạo
+// using QLBanHang.DAL; // Không dùng LINQ to SQL context cũ nữa
 
 namespace QLBanHang.DAL
 {
@@ -13,17 +12,17 @@ namespace QLBanHang.DAL
         // 1. Lấy danh sách sản phẩm
         public List<SanPhamDTO> LayDanhSachSanPham()
         {
-            // Khởi tạo context kết nối
-            using (QLBanHangContextDataContext db = new QLBanHangContextDataContext())
+            using (var db = new QLBanHangDbContext())
             {
-                // Truy vấn LINQ: Lấy từ bảng SanPhams trong DB
+                // EF Query: Cú pháp vẫn tương tự LINQ nhưng chạy trên DbContext
                 var danhSach = db.SanPhams.Select(sp => new SanPhamDTO
                 {
                     MaSP = sp.MaSP,
                     TenSP = sp.TenSP,
-                    DonGia = (decimal)sp.DonGia, // Ép kiểu nếu cần
-                    SoLuong = (int)sp.SoLuong,
-                    TrangThai = (bool)sp.TrangThai
+                    // Xử lý Nullable decimal/int an toàn hơn
+                    DonGia = sp.DonGia ?? 0,
+                    SoLuong = sp.SoLuong ?? 0,
+                    TrangThai = sp.TrangThai ?? false
                 }).ToList();
 
                 return danhSach;
@@ -33,58 +32,78 @@ namespace QLBanHang.DAL
         // 2. Thêm sản phẩm
         public bool ThemSanPham(SanPhamDTO spMoi)
         {
-            using (QLBanHangContextDataContext db = new QLBanHangContextDataContext())
+            using (var db = new QLBanHangDbContext())
             {
-                // Tạo đối tượng Entity từ DTO
-                SanPham sp = new SanPham
+                try
                 {
-                    TenSP = spMoi.TenSP,
-                    DonGia = spMoi.DonGia,
-                    SoLuong = spMoi.SoLuong,
-                    TrangThai = spMoi.TrangThai
-                    // MaSP tự tăng nên không gán
-                };
+                    var sp = new SanPham
+                    {
+                        TenSP = spMoi.TenSP,
+                        DonGia = spMoi.DonGia,
+                        SoLuong = spMoi.SoLuong,
+                        TrangThai = spMoi.TrangThai
+                    };
 
-                db.SanPhams.InsertOnSubmit(sp); // Đánh dấu để thêm
-                db.SubmitChanges(); // Lưu xuống CSDL
-                return true;
+                    db.SanPhams.Add(sp); // Thay InsertOnSubmit bằng Add
+                    db.SaveChanges();    // Thay SubmitChanges bằng SaveChanges
+                    return true;
+                }
+                catch (Exception)
+                {
+                    return false;
+                }
             }
         }
 
         // 3. Sửa sản phẩm
         public bool SuaSanPham(SanPhamDTO spSua)
         {
-            using (QLBanHangContextDataContext db = new QLBanHangContextDataContext())
+            using (var db = new QLBanHangDbContext())
             {
-                // Tìm sản phẩm cần sửa theo MaSP
-                SanPham sp = db.SanPhams.SingleOrDefault(x => x.MaSP == spSua.MaSP);
-                if (sp != null)
+                try
                 {
-                    sp.TenSP = spSua.TenSP;
-                    sp.DonGia = spSua.DonGia;
-                    sp.SoLuong = spSua.SoLuong;
-                    sp.TrangThai = spSua.TrangThai;
+                    // Tìm đối tượng cần sửa
+                    var sp = db.SanPhams.Find(spSua.MaSP); // EF hỗ trợ hàm Find theo ID rất nhanh
 
-                    db.SubmitChanges();
-                    return true;
+                    if (sp != null)
+                    {
+                        sp.TenSP = spSua.TenSP;
+                        sp.DonGia = spSua.DonGia;
+                        sp.SoLuong = spSua.SoLuong;
+                        sp.TrangThai = spSua.TrangThai;
+
+                        db.SaveChanges();
+                        return true;
+                    }
+                    return false;
                 }
-                return false;
+                catch (Exception)
+                {
+                    return false;
+                }
             }
         }
 
         // 4. Xóa sản phẩm
         public bool XoaSanPham(int maSP)
         {
-            using (QLBanHangContextDataContext db = new QLBanHangContextDataContext())
+            using (var db = new QLBanHangDbContext())
             {
-                SanPham sp = db.SanPhams.SingleOrDefault(x => x.MaSP == maSP);
-                if (sp != null)
+                try
                 {
-                    db.SanPhams.DeleteOnSubmit(sp);
-                    db.SubmitChanges();
-                    return true;
+                    var sp = db.SanPhams.Find(maSP);
+                    if (sp != null)
+                    {
+                        db.SanPhams.Remove(sp); // Thay DeleteOnSubmit bằng Remove
+                        db.SaveChanges();
+                        return true;
+                    }
+                    return false;
                 }
-                return false;
+                catch (Exception)
+                {
+                    return false;
+                }
             }
         }
     }

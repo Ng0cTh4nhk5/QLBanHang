@@ -32,6 +32,7 @@
             this.label1 = new System.Windows.Forms.Label();
             this.button1 = new System.Windows.Forms.Button();
             this.groupBox1 = new System.Windows.Forms.GroupBox();
+            this.chkLocTonKho = new System.Windows.Forms.CheckBox();
             this.btnLamMoi = new System.Windows.Forms.Button();
             this.btnXoa = new System.Windows.Forms.Button();
             this.btnSua = new System.Windows.Forms.Button();
@@ -46,7 +47,6 @@
             this.label3 = new System.Windows.Forms.Label();
             this.label2 = new System.Windows.Forms.Label();
             this.dgvSanPham = new System.Windows.Forms.DataGridView();
-            this.chkLocTonKho = new System.Windows.Forms.CheckBox();
             this.groupBox1.SuspendLayout();
             ((System.ComponentModel.ISupportInitialize)(this.dgvSanPham)).BeginInit();
             this.SuspendLayout();
@@ -100,6 +100,18 @@
             this.groupBox1.Size = new System.Drawing.Size(775, 202);
             this.groupBox1.TabIndex = 5;
             this.groupBox1.TabStop = false;
+            this.groupBox1.Enter += new System.EventHandler(this.groupBox1_Enter);
+            // 
+            // chkLocTonKho
+            // 
+            this.chkLocTonKho.AutoSize = true;
+            this.chkLocTonKho.Location = new System.Drawing.Point(583, 33);
+            this.chkLocTonKho.Name = "chkLocTonKho";
+            this.chkLocTonKho.Size = new System.Drawing.Size(210, 24);
+            this.chkLocTonKho.TabIndex = 16;
+            this.chkLocTonKho.Text = "Chỉ tìm hàng còn tồn kho";
+            this.chkLocTonKho.UseVisualStyleBackColor = true;
+            this.chkLocTonKho.CheckedChanged += new System.EventHandler(this.chkLocTonKho_CheckedChanged);
             // 
             // btnLamMoi
             // 
@@ -237,17 +249,6 @@
             this.dgvSanPham.TabIndex = 8;
             this.dgvSanPham.CellClick += new System.Windows.Forms.DataGridViewCellEventHandler(this.dgvSanPham_CellClick);
             // 
-            // chkLocTonKho
-            // 
-            this.chkLocTonKho.AutoSize = true;
-            this.chkLocTonKho.Location = new System.Drawing.Point(583, 33);
-            this.chkLocTonKho.Name = "chkLocTonKho";
-            this.chkLocTonKho.Size = new System.Drawing.Size(210, 24);
-            this.chkLocTonKho.TabIndex = 16;
-            this.chkLocTonKho.Text = "Chỉ tìm hàng còn tồn kho";
-            this.chkLocTonKho.UseVisualStyleBackColor = true;
-            this.chkLocTonKho.CheckedChanged += new System.EventHandler(this.chkLocTonKho_CheckedChanged);
-            // 
             // frmSanPham
             // 
             this.AutoScaleDimensions = new System.Drawing.SizeF(9F, 20F);
@@ -259,7 +260,7 @@
             this.Controls.Add(this.label1);
             this.Controls.Add(this.txtTimKiem);
             this.Name = "frmSanPham";
-            this.Text = "Form1";
+            this.Text = "Sản phẩm";
             this.Load += new System.EventHandler(this.frmSanPham_Load);
             this.groupBox1.ResumeLayout(false);
             this.groupBox1.PerformLayout();

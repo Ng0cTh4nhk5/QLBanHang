@@ -167,5 +167,10 @@ namespace QLBanHang.GUI
             txtTimKiem.Clear();
             chkTrangThai.Checked = true;
         }
+
+        private void groupBox1_Enter(object sender, EventArgs e)
+        {
+
+        }
     }
 }
