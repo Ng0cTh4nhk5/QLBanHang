@@ -30,7 +30,7 @@
         {
             this.txtTimKiem = new System.Windows.Forms.TextBox();
             this.label1 = new System.Windows.Forms.Label();
-            this.button1 = new System.Windows.Forms.Button();
+            this.btnTimKiem = new System.Windows.Forms.Button();
             this.groupBox1 = new System.Windows.Forms.GroupBox();
             this.btnLamMoi = new System.Windows.Forms.Button();
             this.btnXoa = new System.Windows.Forms.Button();
@@ -71,16 +71,16 @@
             this.label1.Text = "Nhập tên sản phẩm";
             this.label1.TextAlign = System.Drawing.ContentAlignment.TopRight;
             // 
-            // button1
+            // btnTimKiem
             // 
-            this.button1.Location = new System.Drawing.Point(209, 19);
-            this.button1.Margin = new System.Windows.Forms.Padding(2, 2, 2, 2);
-            this.button1.Name = "button1";
-            this.button1.Size = new System.Drawing.Size(58, 22);
-            this.button1.TabIndex = 4;
-            this.button1.Text = "Tìm";
-            this.button1.UseVisualStyleBackColor = true;
-            this.button1.Click += new System.EventHandler(this.btnTimKiem_Click);
+            this.btnTimKiem.Location = new System.Drawing.Point(209, 19);
+            this.btnTimKiem.Margin = new System.Windows.Forms.Padding(2, 2, 2, 2);
+            this.btnTimKiem.Name = "btnTimKiem";
+            this.btnTimKiem.Size = new System.Drawing.Size(58, 22);
+            this.btnTimKiem.TabIndex = 4;
+            this.btnTimKiem.Text = "Tìm";
+            this.btnTimKiem.UseVisualStyleBackColor = true;
+            this.btnTimKiem.Click += new System.EventHandler(this.btnTimKiem_Click);
             // 
             // groupBox1
             // 
@@ -107,7 +107,7 @@
             // 
             // btnLamMoi
             // 
-            this.btnLamMoi.Location = new System.Drawing.Point(324, 101);
+            this.btnLamMoi.Location = new System.Drawing.Point(374, 102);
             this.btnLamMoi.Margin = new System.Windows.Forms.Padding(2, 2, 2, 2);
             this.btnLamMoi.Name = "btnLamMoi";
             this.btnLamMoi.Size = new System.Drawing.Size(61, 24);
@@ -118,7 +118,7 @@
             // 
             // btnXoa
             // 
-            this.btnXoa.Location = new System.Drawing.Point(324, 73);
+            this.btnXoa.Location = new System.Drawing.Point(374, 74);
             this.btnXoa.Margin = new System.Windows.Forms.Padding(2, 2, 2, 2);
             this.btnXoa.Name = "btnXoa";
             this.btnXoa.Size = new System.Drawing.Size(61, 24);
@@ -129,7 +129,7 @@
             // 
             // btnSua
             // 
-            this.btnSua.Location = new System.Drawing.Point(324, 46);
+            this.btnSua.Location = new System.Drawing.Point(374, 47);
             this.btnSua.Margin = new System.Windows.Forms.Padding(2, 2, 2, 2);
             this.btnSua.Name = "btnSua";
             this.btnSua.Size = new System.Drawing.Size(61, 24);
@@ -140,7 +140,7 @@
             // 
             // btnThem
             // 
-            this.btnThem.Location = new System.Drawing.Point(324, 16);
+            this.btnThem.Location = new System.Drawing.Point(374, 17);
             this.btnThem.Margin = new System.Windows.Forms.Padding(2, 2, 2, 2);
             this.btnThem.Name = "btnThem";
             this.btnThem.Size = new System.Drawing.Size(61, 25);
@@ -162,7 +162,7 @@
             // 
             // txtSoLuong
             // 
-            this.txtSoLuong.Location = new System.Drawing.Point(196, 61);
+            this.txtSoLuong.Location = new System.Drawing.Point(256, 59);
             this.txtSoLuong.Margin = new System.Windows.Forms.Padding(2, 2, 2, 2);
             this.txtSoLuong.Name = "txtSoLuong";
             this.txtSoLuong.Size = new System.Drawing.Size(68, 20);
@@ -171,7 +171,7 @@
             // label5
             // 
             this.label5.AutoSize = true;
-            this.label5.Location = new System.Drawing.Point(144, 63);
+            this.label5.Location = new System.Drawing.Point(180, 62);
             this.label5.Margin = new System.Windows.Forms.Padding(2, 0, 2, 0);
             this.label5.Name = "label5";
             this.label5.Size = new System.Drawing.Size(49, 13);
@@ -180,7 +180,7 @@
             // 
             // txtMaSP
             // 
-            this.txtMaSP.Location = new System.Drawing.Point(62, 15);
+            this.txtMaSP.Location = new System.Drawing.Point(101, 13);
             this.txtMaSP.Margin = new System.Windows.Forms.Padding(2, 2, 2, 2);
             this.txtMaSP.Name = "txtMaSP";
             this.txtMaSP.ReadOnly = true;
@@ -189,7 +189,7 @@
             // 
             // txtTenSP
             // 
-            this.txtTenSP.Location = new System.Drawing.Point(62, 38);
+            this.txtTenSP.Location = new System.Drawing.Point(101, 36);
             this.txtTenSP.Margin = new System.Windows.Forms.Padding(2, 2, 2, 2);
             this.txtTenSP.Name = "txtTenSP";
             this.txtTenSP.Size = new System.Drawing.Size(68, 20);
@@ -197,7 +197,7 @@
             // 
             // txtDonGia
             // 
-            this.txtDonGia.Location = new System.Drawing.Point(62, 61);
+            this.txtDonGia.Location = new System.Drawing.Point(101, 59);
             this.txtDonGia.Margin = new System.Windows.Forms.Padding(2, 2, 2, 2);
             this.txtDonGia.Name = "txtDonGia";
             this.txtDonGia.Size = new System.Drawing.Size(68, 20);
@@ -275,7 +275,7 @@
             this.Controls.Add(this.chkLocTonKho);
             this.Controls.Add(this.dgvSanPham);
             this.Controls.Add(this.groupBox1);
-            this.Controls.Add(this.button1);
+            this.Controls.Add(this.btnTimKiem);
             this.Controls.Add(this.label1);
             this.Controls.Add(this.txtTimKiem);
             this.Margin = new System.Windows.Forms.Padding(2, 2, 2, 2);
@@ -293,7 +293,7 @@
         #endregion
         private System.Windows.Forms.TextBox txtTimKiem;
         private System.Windows.Forms.Label label1;
-        private System.Windows.Forms.Button button1;
+        private System.Windows.Forms.Button btnTimKiem;
         private System.Windows.Forms.GroupBox groupBox1;
         private System.Windows.Forms.Label label4;
         private System.Windows.Forms.Label label3;

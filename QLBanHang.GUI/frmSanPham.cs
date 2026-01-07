@@ -20,6 +20,7 @@ namespace QLBanHang.GUI
         // 1. Sự kiện Load Form
         private void frmSanPham_Load(object sender, EventArgs e)
         {
+            TrangTriGiaoDien();
             LoadData();
         }
 
@@ -234,7 +235,61 @@ namespace QLBanHang.GUI
             chkTrangThai.Checked = true;
         }
 
+        private void TrangTriGiaoDien()
+        {
+            // 1. Màu nền Form
+            this.BackColor = System.Drawing.Color.WhiteSmoke;
 
+            // 2. Trang trí GroupBox
+            groupBox1.BackColor = System.Drawing.Color.White;
+            groupBox1.Font = new System.Drawing.Font("Segoe UI", 10, System.Drawing.FontStyle.Regular);
+            groupBox1.ForeColor = System.Drawing.Color.DarkBlue;
+
+            // 3. Trang trí DataGridView (Bảng dữ liệu)
+            dgvSanPham.BackgroundColor = System.Drawing.Color.White;
+            dgvSanPham.BorderStyle = BorderStyle.None;
+            dgvSanPham.AlternatingRowsDefaultCellStyle.BackColor = System.Drawing.Color.FromArgb(238, 239, 249);
+            dgvSanPham.CellBorderStyle = DataGridViewCellBorderStyle.SingleHorizontal;
+            dgvSanPham.DefaultCellStyle.SelectionBackColor = System.Drawing.Color.DarkTurquoise;
+            dgvSanPham.DefaultCellStyle.SelectionForeColor = System.Drawing.Color.WhiteSmoke;
+
+            // Chỉnh màu tiêu đề cột
+            dgvSanPham.EnableHeadersVisualStyles = false;
+            dgvSanPham.ColumnHeadersBorderStyle = DataGridViewHeaderBorderStyle.None;
+            dgvSanPham.ColumnHeadersDefaultCellStyle.BackColor = System.Drawing.Color.FromArgb(20, 25, 72); // Màu xanh đậm
+            dgvSanPham.ColumnHeadersDefaultCellStyle.ForeColor = System.Drawing.Color.White;
+            dgvSanPham.ColumnHeadersDefaultCellStyle.Font = new System.Drawing.Font("Segoe UI", 10, System.Drawing.FontStyle.Bold);
+            dgvSanPham.ColumnHeadersHeight = 35; // Tăng chiều cao tiêu đề
+
+            // 4. Trang trí các Nút bấm (Button)
+            // Style nút THÊM (Màu xanh lá)
+            StyleButton(btnThem, System.Drawing.Color.ForestGreen);
+
+            // Style nút SỬA (Màu cam/vàng)
+            StyleButton(btnSua, System.Drawing.Color.Goldenrod);
+
+            // Style nút XÓA (Màu đỏ)
+            StyleButton(btnXoa, System.Drawing.Color.Crimson);
+
+            // Style nút LÀM MỚI (Màu xanh dương)
+            StyleButton(btnLamMoi, System.Drawing.Color.SteelBlue);
+
+            // Style nút TÌM KIẾM
+            StyleButton(btnTimKiem, System.Drawing.Color.DimGray);
+            // (Lưu ý: Trong code cũ của bạn nút tìm kiếm tên là button1, nếu bạn đổi tên rồi thì sửa lại nhé)
+        }
+
+        // Hàm phụ trợ để làm đẹp nút bấm
+        private void StyleButton(Button btn, System.Drawing.Color color)
+        {
+            if (btn == null) return;
+            btn.FlatStyle = FlatStyle.Flat;
+            btn.FlatAppearance.BorderSize = 0;
+            btn.BackColor = color;
+            btn.ForeColor = System.Drawing.Color.White;
+            btn.Font = new System.Drawing.Font("Segoe UI", 9, System.Drawing.FontStyle.Bold);
+            btn.Cursor = Cursors.Hand; // Đổi con trỏ chuột thành hình bàn tay
+        }
 
     }
 }

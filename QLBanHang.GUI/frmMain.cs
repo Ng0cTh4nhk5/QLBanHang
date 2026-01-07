@@ -14,6 +14,7 @@ namespace QLBanHang.GUI
         private void frmMain_Load(object sender, EventArgs e)
         {
             // Cho Form hiện giữa màn hình và to hết cỡ
+            TrangTriGiaoDien();
             this.WindowState = FormWindowState.Maximized;
         }
 
@@ -82,6 +83,35 @@ namespace QLBanHang.GUI
         private void mnuThoat_Click(object sender, EventArgs e)
         {
             Application.Exit();
+        }
+
+        private void TrangTriGiaoDien()
+        {
+            // 1. Trang trí Thanh Menu (MenuStrip)
+            menuStrip1.BackColor = System.Drawing.Color.FromArgb(20, 25, 72); // Màu xanh đậm
+            menuStrip1.ForeColor = System.Drawing.Color.White;
+            menuStrip1.Font = new System.Drawing.Font("Segoe UI", 11, System.Drawing.FontStyle.Regular);
+
+            // Duyệt qua từng menu con để chỉnh màu khi hiển thị
+            foreach (ToolStripMenuItem item in menuStrip1.Items)
+            {
+                item.ForeColor = System.Drawing.Color.White;
+            }
+
+            // 2. Đổi màu nền vùng chứa MDI (Phần nền xám mặc định của Windows)
+            // Mẹo: Vùng này thực chất là một control ẩn tên là "MdiClient"
+            foreach (Control ctl in this.Controls)
+            {
+                if (ctl is MdiClient)
+                {
+                    // Đổi màu nền sang trắng khói cho sáng sủa, đồng bộ với Form con
+                    ctl.BackColor = System.Drawing.Color.WhiteSmoke;
+                    break; // Tìm thấy rồi thì dừng vòng lặp
+                }
+            }
+
+            // 3. (Tuỳ chọn) Đặt tiêu đề Form cho chuyên nghiệp
+            this.Text = "HỆ THỐNG QUẢN LÝ BÁN HÀNG - PHIÊN BẢN 1.0";
         }
     }
 }
