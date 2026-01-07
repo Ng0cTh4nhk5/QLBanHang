@@ -13,12 +13,15 @@ namespace QLBanHang.DAL
         public string TenSP { get; set; }
         public int SoLuong { get; set; }
         public decimal DoanhThu { get; set; }
+
     }
 
     public class BaoCaoDoanhThu
     {
         public string ThoiGian { get; set; }
         public int SoLuongDon { get; set; }
+
+        public decimal TongDoanhThu { get; set; }
         // Bạn có thể thêm property TongTien nếu muốn tính tổng doanh thu
     }
     // ---------------------------------------------------------------------
@@ -70,25 +73,40 @@ namespace QLBanHang.DAL
             }
         }
 
-        // 3. Tổng doanh thu theo tháng (Đã sửa để dùng class BaoCaoDoanhThu)
-        public object LayDoanhThuTheoThang()
+        // 3. Tổng doanh thu theo tháng (Đã nâng cấp)
+        public List<BaoCaoDoanhThu> LayDoanhThuTheoThang()
         {
             using (var db = new QLBanHangDbContext())
             {
-                var rawData = db.HoaDons
-                                .Where(h => h.NgayLap.HasValue)
-                                .Select(h => new { h.NgayLap })
-                                .ToList();
+                // Bước 1: Lấy dữ liệu thô (Join bảng Hóa Đơn và Chi Tiết để có tiền)
+                var query = from hd in db.HoaDons
+                            join ct in db.ChiTietHoaDons on hd.MaHD equals ct.MaHD
+                            where hd.NgayLap.HasValue
+                            select new
+                            {
+                                MaHD = hd.MaHD,
+                                NgayLap = hd.NgayLap.Value,
+                                // Tính tiền từng dòng chi tiết (ép kiểu decimal để tránh tràn số)
+                                ThanhTien = (decimal)ct.SoLuong * ct.DonGia
+                            };
 
-                var result = rawData
-                             .GroupBy(x => new { Month = x.NgayLap.Value.Month, Year = x.NgayLap.Value.Year })
+                // Lấy về RAM để xử lý GroupBy (LINQ to Objects)
+                var data = query.ToList();
+
+                // Bước 2: Gom nhóm theo Tháng/Năm
+                var result = data
+                             .GroupBy(x => new { Month = x.NgayLap.Month, Year = x.NgayLap.Year })
                              .OrderByDescending(g => g.Key.Year)
                              .ThenByDescending(g => g.Key.Month)
-                             // SỬA Ở ĐÂY: Dùng class BaoCaoDoanhThu
                              .Select(g => new BaoCaoDoanhThu
                              {
                                  ThoiGian = string.Format("Tháng {0}/{1}", g.Key.Month, g.Key.Year),
-                                 SoLuongDon = g.Count()
+
+                                 // Đếm số hóa đơn (Phải dùng Distinct vì 1 hóa đơn có nhiều chi tiết)
+                                 SoLuongDon = g.Select(x => x.MaHD).Distinct().Count(),
+
+                                 // Tính tổng tiền
+                                 TongDoanhThu = g.Sum(x => x.ThanhTien)
                              })
                              .ToList();
 

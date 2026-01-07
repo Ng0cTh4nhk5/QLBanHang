@@ -58,5 +58,22 @@ namespace QLBanHang.BUS
             // Sử dụng LINQ để lọc tại bộ nhớ (hoặc viết thêm hàm dưới DAL để tối ưu hơn)
             return ds.Where(x => x.TenSP.ToLower().Contains(tuKhoa.ToLower())).ToList();
         }
+
+        // Thêm vào class SanPhamBUS
+        public SanPhamDTO LaySanPhamTheoTen(string tenSP)
+        {
+            var spEntity = spDAL.LaySanPhamTheoTen(tenSP);
+            if (spEntity == null) return null;
+
+            // Chuyển từ Entity sang DTO
+            return new SanPhamDTO
+            {
+                MaSP = spEntity.MaSP,
+                TenSP = spEntity.TenSP,
+                DonGia = spEntity.DonGia ?? 0,
+                SoLuong = spEntity.SoLuong ?? 0,
+                TrangThai = spEntity.TrangThai ?? false
+            };
+        }
     }
 }

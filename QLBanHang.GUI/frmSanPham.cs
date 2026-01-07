@@ -30,30 +30,96 @@ namespace QLBanHang.GUI
         }
 
         // 2. Nút THÊM
+        // 2. Nút THÊM (Đã nâng cấp logic thông minh)
         private void btnThem_Click(object sender, EventArgs e)
         {
             try
             {
-                SanPhamDTO sp = new SanPhamDTO();
-                sp.TenSP = txtTenSP.Text;
-                sp.DonGia = decimal.Parse(txtDonGia.Text);
-                sp.SoLuong = int.Parse(txtSoLuong.Text);
-                sp.TrangThai = chkTrangThai.Checked;
-
-                if (spBUS.ThemSanPham(sp))
+                // 1. Validate dữ liệu đầu vào cơ bản
+                if (string.IsNullOrWhiteSpace(txtTenSP.Text))
                 {
-                    MessageBox.Show("Thêm thành công!");
-                    LoadData();
-                    ResetForm(); // Xóa trắng ô nhập
+                    MessageBox.Show("Tên sản phẩm không được để trống!");
+                    return;
+                }
+
+                string tenSP = txtTenSP.Text.Trim();
+                decimal donGiaNhap = decimal.Parse(txtDonGia.Text);
+                int soLuongNhap = int.Parse(txtSoLuong.Text);
+
+                if (donGiaNhap < 0 || soLuongNhap < 0)
+                {
+                    MessageBox.Show("Đơn giá và số lượng không được âm!");
+                    return;
+                }
+
+                // 2. Kiểm tra sản phẩm đã tồn tại trong kho chưa?
+                SanPhamDTO spTonTai = spBUS.LaySanPhamTheoTen(tenSP);
+
+                if (spTonTai == null)
+                {
+                    // --- TRƯỜNG HỢP A: SẢN PHẨM MỚI HOÀN TOÀN ---
+                    SanPhamDTO spMoi = new SanPhamDTO();
+                    spMoi.TenSP = tenSP;
+                    spMoi.DonGia = donGiaNhap;
+                    spMoi.SoLuong = soLuongNhap;
+                    spMoi.TrangThai = chkTrangThai.Checked;
+
+                    if (spBUS.ThemSanPham(spMoi))
+                    {
+                        MessageBox.Show("Thêm sản phẩm mới thành công!");
+                        LoadData();
+                        ResetForm();
+                    }
                 }
                 else
                 {
-                    MessageBox.Show("Thêm thất bại (Kiểm tra tên rỗng hoặc số âm)!");
+                    // --- TRƯỜNG HỢP B: ĐÃ CÓ (TRÙNG TÊN) -> XỬ LÝ CỘNG DỒN ---
+
+                    // a. Cộng dồn số lượng
+                    spTonTai.SoLuong += soLuongNhap;
+
+                    // b. Xử lý logic Đơn giá (Hỏi người dùng)
+                    if (spTonTai.DonGia != donGiaNhap)
+                    {
+                        string msg = string.Format(
+                            "Sản phẩm '{0}' đã tồn tại!\n" +
+                            "- Giá cũ trong kho: {1:N0}\n" +
+                            "- Giá bạn vừa nhập: {2:N0}\n\n" +
+                            "Bạn có muốn cập nhật theo GIÁ MỚI không?\n" +
+                            "(Yes = Lấy giá mới, No = Giữ giá cũ, chỉ cộng số lượng)",
+                            spTonTai.TenSP, spTonTai.DonGia, donGiaNhap);
+
+                        DialogResult result = MessageBox.Show(msg, "Xác nhận giá",
+                                                              MessageBoxButtons.YesNo,
+                                                              MessageBoxIcon.Question);
+
+                        if (result == DialogResult.Yes)
+                        {
+                            spTonTai.DonGia = donGiaNhap; // Cập nhật giá mới
+                        }
+                        // Nếu No: Giữ nguyên spTonTai.DonGia cũ
+                    }
+
+                    // c. Gọi hàm Cập nhật (SuaSanPham)
+                    if (spBUS.SuaSanPham(spTonTai))
+                    {
+                        MessageBox.Show($"Đã nhập thêm hàng! Tổng số lượng hiện tại: {spTonTai.SoLuong}");
+                        LoadData();
+                        ResetForm();
+                    }
+                    else
+                    {
+                        MessageBox.Show("Có lỗi khi cập nhật số lượng!");
+                    }
                 }
+            }
+            catch (FormatException)
+            {
+                MessageBox.Show("Vui lòng nhập Đơn giá và Số lượng đúng định dạng số!");
             }
             catch (Exception ex)
             {
-                MessageBox.Show("Lỗi nhập liệu: " + ex.Message);
+                MessageBox.Show("Lỗi hệ thống: " + ex.Message);
             }
         }
 
@@ -168,9 +234,7 @@ namespace QLBanHang.GUI
             chkTrangThai.Checked = true;
         }
 
-        private void groupBox1_Enter(object sender, EventArgs e)
-        {
 
-        }
+
     }
 }

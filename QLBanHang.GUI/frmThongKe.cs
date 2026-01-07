@@ -47,12 +47,33 @@ namespace QLBanHang.GUI
         // --- TAB 3: DOANH THU THEO THÁNG ---
         private void TaiDuLieuDoanhThuThang()
         {
+            // Reset lưới để nhận cấu trúc cột mới
+            dgvDoanhThu.DataSource = null;
+            dgvDoanhThu.Columns.Clear();
+
+            // Lấy dữ liệu từ BUS
             dgvDoanhThu.DataSource = bus.LayDoanhThuTheoThang();
+
+            // Chỉnh sửa tiêu đề và định dạng cột
             dgvDoanhThu.AutoSizeColumnsMode = DataGridViewAutoSizeColumnsMode.Fill;
 
-            // Format cột tiền (nếu cột tên là 'Tổng_Doanh_Thu')
-            if (dgvDoanhThu.Columns["Tổng_Doanh_Thu"] != null)
-                dgvDoanhThu.Columns["Tổng_Doanh_Thu"].DefaultCellStyle.Format = "N0";
+            // Cột Thời gian
+            if (dgvDoanhThu.Columns["ThoiGian"] != null)
+                dgvDoanhThu.Columns["ThoiGian"].HeaderText = "Thời Gian";
+
+            // Cột Số lượng đơn
+            if (dgvDoanhThu.Columns["SoLuongDon"] != null)
+                dgvDoanhThu.Columns["SoLuongDon"].HeaderText = "Số Lượng Đơn";
+
+            // Cột Tổng doanh thu (Mới)
+            if (dgvDoanhThu.Columns["TongDoanhThu"] != null)
+            {
+                dgvDoanhThu.Columns["TongDoanhThu"].HeaderText = "Tổng Doanh Thu";
+                // Format chuỗi tiền tệ (N0: số nguyên có dấu phân cách ngàn)
+                dgvDoanhThu.Columns["TongDoanhThu"].DefaultCellStyle.Format = "N0";
+                // Căn lề phải cho cột số tiền nhìn chuyên nghiệp hơn
+                dgvDoanhThu.Columns["TongDoanhThu"].DefaultCellStyle.Alignment = DataGridViewContentAlignment.MiddleRight;
+            }
         }
     }
 }

@@ -106,5 +106,33 @@ namespace QLBanHang.DAL
                 }
             }
         }
+
+        public SanPham LaySanPhamTheoTen(string tenSP)
+        {
+            using (var db = new QLBanHangDbContext())
+            {
+                // Tìm chính xác theo tên (không phân biệt hoa thường)
+                return db.SanPhams
+                         .FirstOrDefault(sp => sp.TenSP.ToLower() == tenSP.ToLower());
+            }
+        }
+
+        // Hàm cập nhật (Update) sản phẩm nếu đã có sẵn
+        public bool CapNhatSanPham(SanPham sp)
+        {
+            using (var db = new QLBanHangDbContext())
+            {
+                // Phải attach đối tượng vào context hoặc tìm lại để update
+                var dbSP = db.SanPhams.Find(sp.MaSP);
+                if (dbSP == null) return false;
+
+                dbSP.SoLuong = sp.SoLuong;
+                dbSP.DonGia = sp.DonGia;
+                // Các trường khác nếu cần...
+
+                db.SaveChanges();
+                return true;
+            }
+        }
     }
 }
