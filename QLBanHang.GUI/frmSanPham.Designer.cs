@@ -81,7 +81,6 @@
             // 
             // groupBox1
             // 
-            this.groupBox1.Controls.Add(this.chkLocTonKho);
             this.groupBox1.Controls.Add(this.btnLamMoi);
             this.groupBox1.Controls.Add(this.btnXoa);
             this.groupBox1.Controls.Add(this.btnSua);
@@ -97,7 +96,7 @@
             this.groupBox1.Controls.Add(this.label2);
             this.groupBox1.Location = new System.Drawing.Point(13, 69);
             this.groupBox1.Name = "groupBox1";
-            this.groupBox1.Size = new System.Drawing.Size(775, 202);
+            this.groupBox1.Size = new System.Drawing.Size(1075, 202);
             this.groupBox1.TabIndex = 5;
             this.groupBox1.TabStop = false;
             this.groupBox1.Enter += new System.EventHandler(this.groupBox1_Enter);
@@ -105,7 +104,7 @@
             // chkLocTonKho
             // 
             this.chkLocTonKho.AutoSize = true;
-            this.chkLocTonKho.Location = new System.Drawing.Point(583, 33);
+            this.chkLocTonKho.Location = new System.Drawing.Point(416, 35);
             this.chkLocTonKho.Name = "chkLocTonKho";
             this.chkLocTonKho.Size = new System.Drawing.Size(210, 24);
             this.chkLocTonKho.TabIndex = 16;
@@ -156,7 +155,7 @@
             // chkTrangThai
             // 
             this.chkTrangThai.AutoSize = true;
-            this.chkTrangThai.Location = new System.Drawing.Point(8, 131);
+            this.chkTrangThai.Location = new System.Drawing.Point(37, 132);
             this.chkTrangThai.Name = "chkTrangThai";
             this.chkTrangThai.Size = new System.Drawing.Size(156, 24);
             this.chkTrangThai.TabIndex = 12;
@@ -241,11 +240,11 @@
             | System.Windows.Forms.AnchorStyles.Right)));
             this.dgvSanPham.AutoSizeColumnsMode = System.Windows.Forms.DataGridViewAutoSizeColumnsMode.Fill;
             this.dgvSanPham.ColumnHeadersHeightSizeMode = System.Windows.Forms.DataGridViewColumnHeadersHeightSizeMode.AutoSize;
-            this.dgvSanPham.Location = new System.Drawing.Point(13, 273);
+            this.dgvSanPham.Location = new System.Drawing.Point(13, 277);
             this.dgvSanPham.Name = "dgvSanPham";
             this.dgvSanPham.RowHeadersWidth = 62;
             this.dgvSanPham.RowTemplate.Height = 28;
-            this.dgvSanPham.Size = new System.Drawing.Size(775, 165);
+            this.dgvSanPham.Size = new System.Drawing.Size(1075, 297);
             this.dgvSanPham.TabIndex = 8;
             this.dgvSanPham.CellClick += new System.Windows.Forms.DataGridViewCellEventHandler(this.dgvSanPham_CellClick);
             // 
@@ -253,7 +252,8 @@
             // 
             this.AutoScaleDimensions = new System.Drawing.SizeF(9F, 20F);
             this.AutoScaleMode = System.Windows.Forms.AutoScaleMode.Font;
-            this.ClientSize = new System.Drawing.Size(800, 450);
+            this.ClientSize = new System.Drawing.Size(1100, 586);
+            this.Controls.Add(this.chkLocTonKho);
             this.Controls.Add(this.dgvSanPham);
             this.Controls.Add(this.groupBox1);
             this.Controls.Add(this.button1);

@@ -235,5 +235,15 @@ namespace QLBanHang.GUI
                 MessageBox.Show("Lưu thất bại! Vui lòng kiểm tra lại CSDL.");
             }
         }
+
+        private void label6_Click(object sender, EventArgs e)
+        {
+
+        }
+
+        private void txtDonGia_TextChanged(object sender, EventArgs e)
+        {
+
+        }
     }
 }

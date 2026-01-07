@@ -16,6 +16,11 @@ namespace QLBanHang.GUI
 
         private void frmThongKe_Load(object sender, EventArgs e)
         {
+            // Cấu hình tự động tạo cột cho CẢ 3 lưới dữ liệu
+            dgvHoaDon.AutoGenerateColumns = true;
+            dgvTopSanPham.AutoGenerateColumns = true;
+            dgvDoanhThu.AutoGenerateColumns = true;
+
             // Set ngày mặc định cho Tab 1
             dtpTuNgay.Value = new DateTime(DateTime.Now.Year, DateTime.Now.Month, 1);
             dtpDenNgay.Value = DateTime.Now;

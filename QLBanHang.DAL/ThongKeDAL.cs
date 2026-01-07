@@ -1,7 +1,8 @@
-﻿using System;
+﻿using QLBanHang.DAL.Entities; // Sử dụng Entity mới
+using System;
 using System.Collections.Generic;
+using System.Data.Entity;
 using System.Linq;
-using QLBanHang.DAL.Entities; // Import Entity
 
 namespace QLBanHang.DAL
 {
@@ -12,16 +13,20 @@ namespace QLBanHang.DAL
         {
             using (var db = new QLBanHangDbContext())
             {
+                // Lấy dữ liệu thô trước
                 var data = from hd in db.HoaDons
                            join kh in db.KhachHangs on hd.MaKH equals kh.MaKH
                            join nv in db.NhanViens on hd.MaNV equals nv.MaNV
-                           where hd.NgayLap >= tuNgay && hd.NgayLap <= denNgay
+                           // So sánh ngày: cắt bỏ phần giờ phút giây để chính xác hơn
+                           where DbFunctions.TruncateTime(hd.NgayLap) >= DbFunctions.TruncateTime(tuNgay)
+                              && DbFunctions.TruncateTime(hd.NgayLap) <= DbFunctions.TruncateTime(denNgay)
                            select new
                            {
-                               Mã_HĐ = hd.MaHD,
-                               Ngày_Lập = hd.NgayLap,
-                               Khách_Hàng = kh.TenKH,
-                               Nhân_Viên = nv.TenNV,
+                               MaHD = hd.MaHD,
+                               NgayLap = hd.NgayLap,
+                               TenKH = kh.TenKH,
+                               TenNV = nv.TenNV,
+                               // Tính tổng tiền tạm tính cho hóa đơn (nếu cần)
                            };
                 return data.ToList();
             }
@@ -38,10 +43,10 @@ namespace QLBanHang.DAL
                            orderby g.Sum(x => x.SoLuong) descending
                            select new
                            {
-                               Mã_SP = g.Key.MaSP,
-                               Tên_Sản_Phẩm = g.Key.TenSP,
-                               Tổng_Số_Lượng_Bán = g.Sum(x => x.SoLuong),
-                               Tổng_Doanh_Thu = g.Sum(x => x.SoLuong * x.DonGia)
+                               MaSP = g.Key.MaSP,
+                               TenSP = g.Key.TenSP,
+                               SoLuong = g.Sum(x => x.SoLuong),
+                               DoanhThu = g.Sum(x => x.SoLuong * x.DonGia)
                            };
 
                 return data.Take(3).ToList();
@@ -53,20 +58,25 @@ namespace QLBanHang.DAL
         {
             using (var db = new QLBanHangDbContext())
             {
-                var data = from hd in db.HoaDons
-                           where hd.NgayLap != null
-                           // Lưu ý: Trong EF, truy cập .Month/.Year đôi khi cần Canonical Functions nếu database cũ
-                           // Nhưng với SQL Server hiện đại thì viết như dưới vẫn ổn.
-                           group hd by new { Thang = hd.NgayLap.Value.Month, Nam = hd.NgayLap.Value.Year } into g
-                           orderby g.Key.Nam descending, g.Key.Thang descending
-                           select new
-                           {
-                               Tháng = "Tháng " + g.Key.Thang + "/" + g.Key.Nam,
-                               Số_Lượng_Đơn = g.Count(),
-                               // Nếu muốn tính tổng tiền thì sum ở đây (cần join thêm bảng ChiTiet)
-                           };
+                // Lấy dữ liệu cần thiết về bộ nhớ trước (ToList) để tránh lỗi dịch SQL khi format chuỗi
+                var rawData = db.HoaDons
+                                .Where(h => h.NgayLap.HasValue)
+                                .Select(h => new { h.NgayLap })
+                                .ToList();
 
-                return data.ToList();
+                // Xử lý Group By trong bộ nhớ (LINQ to Objects)
+                var result = rawData
+                             .GroupBy(x => new { Month = x.NgayLap.Value.Month, Year = x.NgayLap.Value.Year })
+                             .OrderByDescending(g => g.Key.Year)
+                             .ThenByDescending(g => g.Key.Month)
+                             .Select(g => new
+                             {
+                                 ThoiGian = string.Format("Tháng {0}/{1}", g.Key.Month, g.Key.Year),
+                                 SoLuongDon = g.Count()
+                             })
+                             .ToList();
+
+                return result;
             }
         }
     }
