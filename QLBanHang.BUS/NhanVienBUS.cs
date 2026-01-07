@@ -1,21 +1,26 @@
 ﻿using QLBanHang.DAL;
-using QLBanHang.DTO; // Nhớ using DTO
+using QLBanHang.DTO;
 using System.Collections.Generic;
 
 namespace QLBanHang.BUS
 {
     public class NhanVienBUS
     {
-        // Khởi tạo đối tượng DAL
-        private NhanVienDAL dal = new NhanVienDAL();
+        private readonly NhanVienDAL _nhanVienDAL;
 
-        // Hàm lấy danh sách nhân viên để gọi từ Form
+        public NhanVienBUS()
+        {
+            _nhanVienDAL = new NhanVienDAL();
+        }
+
+        /// <summary>
+        /// Lấy danh sách nhân viên
+        /// </summary>
         public List<NhanVienDTO> LayDanhSachNhanVien()
         {
-            // Lưu ý: Trong file NhanVienDAL.cs bạn gửi, tên hàm đang là "LayDanhSachKhachHang"
-            // nên tôi gọi đúng tên đó để chương trình không báo lỗi.
-            // Sau này rảnh bạn nên vào DAL sửa lại thành "LayDanhSachNhanVien" cho chuẩn nhé.
-            return dal.LayDanhSachNhanVien();
+            // Gọi xuống DAL. 
+            // Lưu ý: Nếu DAL chưa sửa tên hàm "LayDanhSachKhachHang", hãy giữ nguyên hoặc vào DAL sửa lại cho đúng chuẩn.
+            return _nhanVienDAL.LayDanhSachNhanVien();
         }
     }
 }

@@ -1,8 +1,4 @@
 ﻿using System;
-using System.Collections.Generic;
-using System.Linq;
-using System.Text;
-using System.Threading.Tasks;
 
 namespace QLBanHang.DTO
 {
@@ -12,18 +8,16 @@ namespace QLBanHang.DTO
         public DateTime NgayLap { get; set; }
 
         public int MaNV { get; set; }
-        public string TenNV { get; set; } // Tên nhân viên
+        public string TenNV { get; set; } // Property phụ trợ để hiển thị lên Grid
 
         public int MaKH { get; set; }
-        public string TenKH { get; set; } // Tên khách hàng
+        public string TenKH { get; set; } // Property phụ trợ để hiển thị lên Grid
 
         public decimal TongTien { get; set; }
 
-        // Constructor
         public HoaDonDTO()
         {
-            NgayLap = DateTime.Now;
-            TongTien = 0; // Khởi tạo giá trị mặc định
+            NgayLap = DateTime.Now; // Mặc định là thời điểm tạo
         }
     }
 }

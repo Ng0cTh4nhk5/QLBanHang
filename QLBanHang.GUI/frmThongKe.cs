@@ -1,77 +1,89 @@
-﻿using QLBanHang.BUS; // Nhớ using BUS
+﻿using QLBanHang.BUS;
 using System;
+using System.Drawing;
 using System.Windows.Forms;
 
 namespace QLBanHang.GUI
 {
     public partial class frmThongKe : Form
     {
-        // Gọi BUS thống kê (Bạn nhớ tạo class ThongKeBUS và ThongKeDAL như tin nhắn trước nhé)
-        ThongKeBUS bus = new ThongKeBUS();
+        private readonly ThongKeBUS _thongKeBUS;
 
         public frmThongKe()
         {
             InitializeComponent();
+            _thongKeBUS = new ThongKeBUS();
         }
 
         private void frmThongKe_Load(object sender, EventArgs e)
         {
-            // Cấu hình tự động tạo cột cho CẢ 3 lưới dữ liệu
+            CaiDatMacDinh();
+            TaiDuLieuTab2();
+            TaiDuLieuTab3();
+        }
+
+        private void CaiDatMacDinh()
+        {
+            // Tự động sinh cột
             dgvHoaDon.AutoGenerateColumns = true;
             dgvTopSanPham.AutoGenerateColumns = true;
             dgvDoanhThu.AutoGenerateColumns = true;
 
-            // Set ngày mặc định cho Tab 1
+            // Cấu hình DateTimePicker: Từ đầu tháng đến hiện tại
             dtpTuNgay.Value = new DateTime(DateTime.Now.Year, DateTime.Now.Month, 1);
             dtpDenNgay.Value = DateTime.Now;
 
-            // Load dữ liệu cho Tab 2 (Top 3) và Tab 3 (Doanh thu) ngay khi mở form
-            TaiDuLieuTop3();
-            TaiDuLieuDoanhThuThang();
+            // AutoSize
+            dgvHoaDon.AutoSizeColumnsMode = DataGridViewAutoSizeColumnsMode.Fill;
+            dgvTopSanPham.AutoSizeColumnsMode = DataGridViewAutoSizeColumnsMode.Fill;
+            dgvDoanhThu.AutoSizeColumnsMode = DataGridViewAutoSizeColumnsMode.Fill;
         }
 
-        // --- TAB 1: DANH SÁCH HÓA ĐƠN THEO NGÀY ---
+        // --- TAB 1: DANH SÁCH HÓA ĐƠN ---
         private void btnThongKeHD_Click(object sender, EventArgs e)
         {
-            dgvHoaDon.DataSource = bus.LayDsHoaDonTheoNgay(dtpTuNgay.Value, dtpDenNgay.Value);
+            dgvHoaDon.DataSource = _thongKeBUS.LayDsHoaDonTheoNgay(dtpTuNgay.Value, dtpDenNgay.Value);
+
+            // Format cột ngày tháng nếu có
+            if (dgvHoaDon.Columns["NgayLap"] != null)
+                dgvHoaDon.Columns["NgayLap"].DefaultCellStyle.Format = "dd/MM/yyyy";
         }
 
-        // --- TAB 2: TOP 3 SẢN PHẨM BÁN CHẠY ---
-        private void TaiDuLieuTop3()
+        // --- TAB 2: TOP 3 SẢN PHẨM ---
+        private void TaiDuLieuTab2()
         {
-            dgvTopSanPham.DataSource = bus.LayTop3SanPham();
-            // Tự động chỉnh độ rộng cột
-            dgvTopSanPham.AutoSizeColumnsMode = DataGridViewAutoSizeColumnsMode.Fill;
+            dgvTopSanPham.DataSource = _thongKeBUS.LayTop3SanPham();
+
+            if (dgvTopSanPham.Columns["DoanhThu"] != null)
+            {
+                dgvTopSanPham.Columns["DoanhThu"].DefaultCellStyle.Format = "N0";
+                dgvTopSanPham.Columns["DoanhThu"].DefaultCellStyle.Alignment = DataGridViewContentAlignment.MiddleRight;
+            }
         }
 
         // --- TAB 3: DOANH THU THEO THÁNG ---
-        private void TaiDuLieuDoanhThuThang()
+        private void TaiDuLieuTab3()
         {
-            // Reset lưới để nhận cấu trúc cột mới
-            dgvDoanhThu.DataSource = null;
-            dgvDoanhThu.Columns.Clear();
+            dgvDoanhThu.DataSource = null; // Reset
+            dgvDoanhThu.DataSource = _thongKeBUS.LayDoanhThuTheoThang();
 
-            // Lấy dữ liệu từ BUS
-            dgvDoanhThu.DataSource = bus.LayDoanhThuTheoThang();
+            // Định dạng cột
+            FormatCotDoanhThu();
+        }
 
-            // Chỉnh sửa tiêu đề và định dạng cột
-            dgvDoanhThu.AutoSizeColumnsMode = DataGridViewAutoSizeColumnsMode.Fill;
-
-            // Cột Thời gian
+        private void FormatCotDoanhThu()
+        {
+            // Kiểm tra null trước khi format để tránh lỗi
             if (dgvDoanhThu.Columns["ThoiGian"] != null)
                 dgvDoanhThu.Columns["ThoiGian"].HeaderText = "Thời Gian";
 
-            // Cột Số lượng đơn
             if (dgvDoanhThu.Columns["SoLuongDon"] != null)
                 dgvDoanhThu.Columns["SoLuongDon"].HeaderText = "Số Lượng Đơn";
 
-            // Cột Tổng doanh thu (Mới)
             if (dgvDoanhThu.Columns["TongDoanhThu"] != null)
             {
                 dgvDoanhThu.Columns["TongDoanhThu"].HeaderText = "Tổng Doanh Thu";
-                // Format chuỗi tiền tệ (N0: số nguyên có dấu phân cách ngàn)
                 dgvDoanhThu.Columns["TongDoanhThu"].DefaultCellStyle.Format = "N0";
-                // Căn lề phải cho cột số tiền nhìn chuyên nghiệp hơn
                 dgvDoanhThu.Columns["TongDoanhThu"].DefaultCellStyle.Alignment = DataGridViewContentAlignment.MiddleRight;
             }
         }

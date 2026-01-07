@@ -1,78 +1,87 @@
 ﻿using QLBanHang.DAL;
 using QLBanHang.DTO;
-using System;
 using System.Collections.Generic;
 using System.Linq;
-using System.Text;
-using System.Threading.Tasks;
 
 namespace QLBanHang.BUS
 {
     public class SanPhamBUS
     {
-        private SanPhamDAL spDAL;
+        private readonly SanPhamDAL _sanPhamDAL;
 
         public SanPhamBUS()
         {
-            spDAL = new SanPhamDAL();
+            _sanPhamDAL = new SanPhamDAL();
         }
 
+        /// <summary>
+        /// Lấy toàn bộ danh sách sản phẩm
+        /// </summary>
         public List<SanPhamDTO> LayDanhSachSanPham()
         {
-            return spDAL.LayDanhSachSanPham();
+            return _sanPhamDAL.LayDanhSachSanPham();
         }
 
+        /// <summary>
+        /// Thêm mới sản phẩm có kiểm tra hợp lệ
+        /// </summary>
         public bool ThemSanPham(SanPhamDTO sp)
         {
-            if (string.IsNullOrEmpty(sp.TenSP))
-            {
-                return false; // Tên không được để trống
-            }
-            if (sp.DonGia < 0)
-            {
-                return false; // Đơn giá không được âm
-            }
-            if (sp.SoLuong < 0)
-            {
-                return false; // Số lượng không được âm
-            }
+            // Validation Logic (Guard Clauses)
+            if (string.IsNullOrEmpty(sp.TenSP)) return false;
+            if (sp.DonGia < 0) return false;
+            if (sp.SoLuong < 0) return false;
 
-            return spDAL.ThemSanPham(sp);
+            return _sanPhamDAL.ThemSanPham(sp);
         }
 
+        /// <summary>
+        /// Cập nhật thông tin sản phẩm
+        /// </summary>
         public bool SuaSanPham(SanPhamDTO sp)
         {
-            // Kiểm tra logic trước khi sửa
             if (sp.DonGia < 0 || sp.SoLuong < 0) return false;
 
-            return spDAL.SuaSanPham(sp);
+            return _sanPhamDAL.SuaSanPham(sp);
         }
 
+        /// <summary>
+        /// Xóa sản phẩm theo mã
+        /// </summary>
         public bool XoaSanPham(int maSP)
         {
-            return spDAL.XoaSanPham(maSP);
+            return _sanPhamDAL.XoaSanPham(maSP);
         }
+
+        /// <summary>
+        /// Tìm kiếm sản phẩm theo tên (Lọc tại bộ nhớ bằng LINQ)
+        /// </summary>
         public List<SanPhamDTO> TimKiemSanPham(string tuKhoa)
         {
-            var ds = spDAL.LayDanhSachSanPham();
-            // Sử dụng LINQ để lọc tại bộ nhớ (hoặc viết thêm hàm dưới DAL để tối ưu hơn)
+            var ds = _sanPhamDAL.LayDanhSachSanPham();
+
+            if (string.IsNullOrEmpty(tuKhoa))
+                return ds;
+
             return ds.Where(x => x.TenSP.ToLower().Contains(tuKhoa.ToLower())).ToList();
         }
 
-        // Thêm vào class SanPhamBUS
+        /// <summary>
+        /// Lấy chi tiết sản phẩm và chuyển đổi Entity sang DTO
+        /// </summary>
         public SanPhamDTO LaySanPhamTheoTen(string tenSP)
         {
-            var spEntity = spDAL.LaySanPhamTheoTen(tenSP);
+            var spEntity = _sanPhamDAL.LaySanPhamTheoTen(tenSP);
             if (spEntity == null) return null;
 
-            // Chuyển từ Entity sang DTO
+            // Mapping Entity -> DTO
             return new SanPhamDTO
             {
                 MaSP = spEntity.MaSP,
                 TenSP = spEntity.TenSP,
-                DonGia = spEntity.DonGia ?? 0,
-                SoLuong = spEntity.SoLuong ?? 0,
-                TrangThai = spEntity.TrangThai ?? false
+                DonGia = spEntity.DonGia,
+                SoLuong = spEntity.SoLuong,
+                TrangThai = spEntity.TrangThai
             };
         }
     }

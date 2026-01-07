@@ -1,10 +1,4 @@
-﻿using System;
-using System.Collections.Generic;
-using System.Linq;
-using System.Text;
-using System.Threading.Tasks;
-
-namespace QLBanHang.DTO
+﻿namespace QLBanHang.DTO
 {
     public class SanPhamDTO
     {
@@ -13,16 +7,5 @@ namespace QLBanHang.DTO
         public decimal DonGia { get; set; }
         public int SoLuong { get; set; }
         public bool TrangThai { get; set; }
-
-        public SanPhamDTO() { }
-
-        public SanPhamDTO(int maSP, string tenSP, decimal donGia, int soLuong, bool trangThai)
-        {
-            this.MaSP = maSP;
-            this.TenSP = tenSP;
-            this.DonGia = donGia;
-            this.SoLuong = soLuong;
-            this.TrangThai = trangThai;
-        }
     }
 }

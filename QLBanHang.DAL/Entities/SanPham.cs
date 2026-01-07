@@ -1,23 +1,25 @@
 ﻿using System.ComponentModel.DataAnnotations;
 using System.ComponentModel.DataAnnotations.Schema;
 
-namespace QLBanHang.DAL.Entities // Khuyến khích gom vào namespace Entities
+namespace QLBanHang.DAL.Entities 
 {
-    [Table("SanPham")] // Ánh xạ tới bảng SanPham trong DB
+    [Table("SanPham")]
     public class SanPham
     {
-        [Key] // Khóa chính
-        [DatabaseGenerated(DatabaseGeneratedOption.Identity)] // Tự tăng
+        [Key]
+        [DatabaseGenerated(DatabaseGeneratedOption.Identity)]
         public int MaSP { get; set; }
 
-        [Required]
+        [Required] // Tên sản phẩm bắt buộc phải có
         [StringLength(100)]
         public string TenSP { get; set; }
 
-        public decimal? DonGia { get; set; }
+        // Refactor: Đổi sang non-nullable để tránh lỗi tính toán cộng trừ nhân chia
+        public decimal DonGia { get; set; }
 
-        public int? SoLuong { get; set; }
+        public int SoLuong { get; set; }
 
-        public bool? TrangThai { get; set; }
+        // Trạng thái: true = Đang bán, false = Ngừng bán
+        public bool TrangThai { get; set; }
     }
 }

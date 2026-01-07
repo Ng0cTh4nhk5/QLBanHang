@@ -1,230 +1,41 @@
 ﻿using QLBanHang.BUS;
 using QLBanHang.DTO;
 using System;
-using System.Collections.Generic;
-using System.Linq; // Bắt buộc có để dùng LINQ
+using System.Data; // Cần thiết để dùng DataTable/List
+using System.Drawing; // Dùng cho Color
+using System.Linq;
 using System.Windows.Forms;
 
 namespace QLBanHang.GUI
 {
     public partial class frmSanPham : Form
     {
-        // Khởi tạo BUS để giao tiếp
-        SanPhamBUS spBUS = new SanPhamBUS();
+        // Sử dụng readonly và underscore theo chuẩn
+        private readonly SanPhamBUS _sanPhamBUS;
 
         public frmSanPham()
         {
             InitializeComponent();
+            _sanPhamBUS = new SanPhamBUS();
         }
 
-        // 1. Sự kiện Load Form
         private void frmSanPham_Load(object sender, EventArgs e)
         {
             TrangTriGiaoDien();
-            LoadData();
+            TaiDuLieu();
         }
 
-        // Hàm chung để tải dữ liệu
-        private void LoadData()
+        private void TaiDuLieu()
         {
-            dgvSanPham.DataSource = spBUS.LayDanhSachSanPham();
-        }
+            dgvSanPham.DataSource = _sanPhamBUS.LayDanhSachSanPham();
 
-        // 2. Nút THÊM
-        // 2. Nút THÊM (Đã nâng cấp logic thông minh)
-        private void btnThem_Click(object sender, EventArgs e)
-        {
-            try
+            // Format cột hiển thị tiền tệ ngay sau khi load
+            if (dgvSanPham.Columns["DonGia"] != null)
             {
-                // 1. Validate dữ liệu đầu vào cơ bản
-                if (string.IsNullOrWhiteSpace(txtTenSP.Text))
-                {
-                    MessageBox.Show("Tên sản phẩm không được để trống!");
-                    return;
-                }
-
-                string tenSP = txtTenSP.Text.Trim();
-                decimal donGiaNhap = decimal.Parse(txtDonGia.Text);
-                int soLuongNhap = int.Parse(txtSoLuong.Text);
-
-                if (donGiaNhap < 0 || soLuongNhap < 0)
-                {
-                    MessageBox.Show("Đơn giá và số lượng không được âm!");
-                    return;
-                }
-
-                // 2. Kiểm tra sản phẩm đã tồn tại trong kho chưa?
-                SanPhamDTO spTonTai = spBUS.LaySanPhamTheoTen(tenSP);
-
-                if (spTonTai == null)
-                {
-                    // --- TRƯỜNG HỢP A: SẢN PHẨM MỚI HOÀN TOÀN ---
-                    SanPhamDTO spMoi = new SanPhamDTO();
-                    spMoi.TenSP = tenSP;
-                    spMoi.DonGia = donGiaNhap;
-                    spMoi.SoLuong = soLuongNhap;
-                    spMoi.TrangThai = chkTrangThai.Checked;
-
-                    if (spBUS.ThemSanPham(spMoi))
-                    {
-                        MessageBox.Show("Thêm sản phẩm mới thành công!");
-                        LoadData();
-                        ResetForm();
-                    }
-                }
-                else
-                {
-                    // --- TRƯỜNG HỢP B: ĐÃ CÓ (TRÙNG TÊN) -> XỬ LÝ CỘNG DỒN ---
-
-                    // a. Cộng dồn số lượng
-                    spTonTai.SoLuong += soLuongNhap;
-
-                    // b. Xử lý logic Đơn giá (Hỏi người dùng)
-                    if (spTonTai.DonGia != donGiaNhap)
-                    {
-                        string msg = string.Format(
-                            "Sản phẩm '{0}' đã tồn tại!\n" +
-                            "- Giá cũ trong kho: {1:N0}\n" +
-                            "- Giá bạn vừa nhập: {2:N0}\n\n" +
-                            "Bạn có muốn cập nhật theo GIÁ MỚI không?\n" +
-                            "(Yes = Lấy giá mới, No = Giữ giá cũ, chỉ cộng số lượng)",
-                            spTonTai.TenSP, spTonTai.DonGia, donGiaNhap);
-
-                        DialogResult result = MessageBox.Show(msg, "Xác nhận giá",
-                                                              MessageBoxButtons.YesNo,
-                                                              MessageBoxIcon.Question);
-
-                        if (result == DialogResult.Yes)
-                        {
-                            spTonTai.DonGia = donGiaNhap; // Cập nhật giá mới
-                        }
-                        // Nếu No: Giữ nguyên spTonTai.DonGia cũ
-                    }
-
-                    // c. Gọi hàm Cập nhật (SuaSanPham)
-                    if (spBUS.SuaSanPham(spTonTai))
-                    {
-                        MessageBox.Show($"Đã nhập thêm hàng! Tổng số lượng hiện tại: {spTonTai.SoLuong}");
-                        LoadData();
-                        ResetForm();
-                    }
-                    else
-                    {
-                        MessageBox.Show("Có lỗi khi cập nhật số lượng!");
-                    }
-                }
-            }
-            catch (FormatException)
-            {
-                MessageBox.Show("Vui lòng nhập Đơn giá và Số lượng đúng định dạng số!");
-            }
-            catch (Exception ex)
-            {
-                MessageBox.Show("Lỗi hệ thống: " + ex.Message);
+                dgvSanPham.Columns["DonGia"].DefaultCellStyle.Format = "N0"; // 10,000
             }
         }
 
-        // 3. Nút SỬA (Bổ sung mới)
-        private void btnSua_Click(object sender, EventArgs e)
-        {
-            if (string.IsNullOrEmpty(txtMaSP.Text))
-            {
-                MessageBox.Show("Vui lòng chọn sản phẩm cần sửa!");
-                return;
-            }
-
-            try
-            {
-                SanPhamDTO sp = new SanPhamDTO();
-                sp.MaSP = int.Parse(txtMaSP.Text); // Lấy ID cũ
-                sp.TenSP = txtTenSP.Text;
-                sp.DonGia = decimal.Parse(txtDonGia.Text);
-                sp.SoLuong = int.Parse(txtSoLuong.Text);
-                sp.TrangThai = chkTrangThai.Checked;
-
-                if (spBUS.SuaSanPham(sp))
-                {
-                    MessageBox.Show("Cập nhật thành công!");
-                    LoadData();
-                    ResetForm();
-                }
-                else
-                {
-                    MessageBox.Show("Sửa thất bại!");
-                }
-            }
-            catch (Exception ex)
-            {
-                MessageBox.Show("Lỗi: " + ex.Message);
-            }
-        }
-
-        // 4. Nút XÓA
-        private void btnXoa_Click(object sender, EventArgs e)
-        {
-            if (string.IsNullOrEmpty(txtMaSP.Text)) return;
-
-            if (MessageBox.Show("Bạn muốn xóa SP này?", "Xác nhận", MessageBoxButtons.YesNo) == DialogResult.Yes)
-            {
-                int maSP = int.Parse(txtMaSP.Text);
-                if (spBUS.XoaSanPham(maSP))
-                {
-                    MessageBox.Show("Đã xóa!");
-                    LoadData();
-                    ResetForm();
-                }
-            }
-        }
-
-        // 5. Nút TÌM KIẾM (Đã fix cho khớp với btnTimKiem)
-        private void btnTimKiem_Click(object sender, EventArgs e)
-        {
-            string tuKhoa = txtTimKiem.Text;
-            // Gọi hàm tìm kiếm bên BUS (đã viết ở bước trước)
-            dgvSanPham.DataSource = spBUS.TimKiemSanPham(tuKhoa);
-        }
-
-        // 6. Nút LÀM MỚI (Reset)
-        private void btnLamMoi_Click(object sender, EventArgs e)
-        {
-            ResetForm();
-            LoadData(); // Load lại toàn bộ danh sách
-        }
-
-        // 7. CheckBox LỌC TỒN KHO (Logic LINQ tại chỗ)
-        private void chkLocTonKho_CheckedChanged(object sender, EventArgs e)
-        {
-            // Kiểm tra nếu checkbox (do em mới tạo) được tick
-            if (chkLocTonKho.Checked)
-            {
-                var list = spBUS.LayDanhSachSanPham();
-                // Lọc các SP có số lượng > 0
-                dgvSanPham.DataSource = list.Where(x => x.SoLuong > 0).ToList();
-            }
-            else
-            {
-                LoadData(); // Bỏ tick thì hiện lại tất cả
-            }
-        }
-
-        // Sự kiện Click vào bảng
-        private void dgvSanPham_CellClick(object sender, DataGridViewCellEventArgs e)
-        {
-            if (e.RowIndex >= 0)
-            {
-                DataGridViewRow row = dgvSanPham.Rows[e.RowIndex];
-                txtMaSP.Text = row.Cells["MaSP"].Value.ToString();
-                txtTenSP.Text = row.Cells["TenSP"].Value.ToString();
-                txtDonGia.Text = row.Cells["DonGia"].Value.ToString();
-                txtSoLuong.Text = row.Cells["SoLuong"].Value.ToString();
-
-                // Kiểm tra null để tránh lỗi
-                if (row.Cells["TrangThai"].Value != null)
-                    chkTrangThai.Checked = (bool)row.Cells["TrangThai"].Value;
-            }
-        }
-
-        // Hàm phụ xóa trắng TextBox
         private void ResetForm()
         {
             txtMaSP.Clear();
@@ -233,63 +44,232 @@ namespace QLBanHang.GUI
             txtSoLuong.Text = "0";
             txtTimKiem.Clear();
             chkTrangThai.Checked = true;
+            txtTenSP.Focus(); // Focus vào ô tên để nhập liệu nhanh
         }
 
+        // --- CÁC NÚT CHỨC NĂNG ---
+
+        private void btnThem_Click(object sender, EventArgs e)
+        {
+            // 1. Validate dữ liệu an toàn (Dùng TryParse)
+            if (string.IsNullOrWhiteSpace(txtTenSP.Text))
+            {
+                MessageBox.Show("Vui lòng nhập tên sản phẩm!", "Cảnh báo", MessageBoxButtons.OK, MessageBoxIcon.Warning);
+                txtTenSP.Focus();
+                return;
+            }
+
+            if (!decimal.TryParse(txtDonGia.Text, out decimal donGia) || donGia < 0)
+            {
+                MessageBox.Show("Đơn giá phải là số và không âm!", "Lỗi nhập liệu", MessageBoxButtons.OK, MessageBoxIcon.Error);
+                return;
+            }
+
+            if (!int.TryParse(txtSoLuong.Text, out int soLuong) || soLuong < 0)
+            {
+                MessageBox.Show("Số lượng phải là số nguyên dương!", "Lỗi nhập liệu", MessageBoxButtons.OK, MessageBoxIcon.Error);
+                return;
+            }
+
+            try
+            {
+                string tenSP = txtTenSP.Text.Trim();
+
+                // 2. Kiểm tra tồn tại
+                var spTonTai = _sanPhamBUS.LaySanPhamTheoTen(tenSP);
+
+                if (spTonTai == null)
+                {
+                    // Case A: Thêm mới
+                    var spMoi = new SanPhamDTO
+                    {
+                        TenSP = tenSP,
+                        DonGia = donGia,
+                        SoLuong = soLuong,
+                        TrangThai = chkTrangThai.Checked
+                    };
+
+                    if (_sanPhamBUS.ThemSanPham(spMoi))
+                    {
+                        MessageBox.Show("Thêm mới thành công!", "Thông báo", MessageBoxButtons.OK, MessageBoxIcon.Information);
+                        TaiDuLieu();
+                        ResetForm();
+                    }
+                }
+                else
+                {
+                    // Case B: Đã tồn tại -> Xử lý cộng dồn
+                    XuLyCongDon(spTonTai, donGia, soLuong);
+                }
+            }
+            catch (Exception ex)
+            {
+                MessageBox.Show($"Lỗi hệ thống: {ex.Message}", "Lỗi", MessageBoxButtons.OK, MessageBoxIcon.Error);
+            }
+        }
+
+        private void XuLyCongDon(SanPhamDTO spTonTai, decimal giaMoi, int slThem)
+        {
+            spTonTai.SoLuong += slThem;
+
+            // Logic hỏi giá
+            if (spTonTai.DonGia != giaMoi)
+            {
+                string msg = $"Sản phẩm '{spTonTai.TenSP}' đã có giá {spTonTai.DonGia:N0}.\n" +
+                             $"Bạn nhập giá mới {giaMoi:N0}.\n\n" +
+                             "Chọn YES để cập nhật giá MỚI.\n" +
+                             "Chọn NO để giữ giá CŨ (chỉ cộng số lượng).";
+
+                if (MessageBox.Show(msg, "Xác nhận giá", MessageBoxButtons.YesNo, MessageBoxIcon.Question) == DialogResult.Yes)
+                {
+                    spTonTai.DonGia = giaMoi;
+                }
+            }
+
+            if (_sanPhamBUS.SuaSanPham(spTonTai))
+            {
+                MessageBox.Show($"Đã cập nhật kho! Tổng số lượng: {spTonTai.SoLuong}", "Thành công");
+                TaiDuLieu();
+                ResetForm();
+            }
+        }
+
+        private void btnSua_Click(object sender, EventArgs e)
+        {
+            if (string.IsNullOrEmpty(txtMaSP.Text) || !int.TryParse(txtMaSP.Text, out int maSP))
+            {
+                MessageBox.Show("Vui lòng chọn sản phẩm cần sửa!", "Cảnh báo");
+                return;
+            }
+
+            // Validate lại số liệu
+            if (!decimal.TryParse(txtDonGia.Text, out decimal donGia) || donGia < 0) return;
+            if (!int.TryParse(txtSoLuong.Text, out int soLuong) || soLuong < 0) return;
+
+            var sp = new SanPhamDTO
+            {
+                MaSP = maSP,
+                TenSP = txtTenSP.Text.Trim(),
+                DonGia = donGia,
+                SoLuong = soLuong,
+                TrangThai = chkTrangThai.Checked
+            };
+
+            if (_sanPhamBUS.SuaSanPham(sp))
+            {
+                MessageBox.Show("Sửa thành công!", "Thông báo");
+                TaiDuLieu();
+                ResetForm();
+            }
+            else
+            {
+                MessageBox.Show("Sửa thất bại!", "Lỗi");
+            }
+        }
+
+        private void btnXoa_Click(object sender, EventArgs e)
+        {
+            if (string.IsNullOrEmpty(txtMaSP.Text) || !int.TryParse(txtMaSP.Text, out int maSP))
+            {
+                MessageBox.Show("Vui lòng chọn sản phẩm cần xóa!", "Cảnh báo");
+                return;
+            }
+
+            if (MessageBox.Show("Bạn có chắc muốn xóa sản phẩm này không?", "Xác nhận", MessageBoxButtons.YesNo, MessageBoxIcon.Warning) == DialogResult.Yes)
+            {
+                if (_sanPhamBUS.XoaSanPham(maSP))
+                {
+                    MessageBox.Show("Đã xóa thành công!");
+                    TaiDuLieu();
+                    ResetForm();
+                }
+                else
+                {
+                    MessageBox.Show("Xóa thất bại (Có thể sản phẩm đã có hóa đơn)!", "Lỗi");
+                }
+            }
+        }
+
+        private void btnTimKiem_Click(object sender, EventArgs e)
+        {
+            dgvSanPham.DataSource = _sanPhamBUS.TimKiemSanPham(txtTimKiem.Text.Trim());
+        }
+
+        private void btnLamMoi_Click(object sender, EventArgs e)
+        {
+            ResetForm();
+            TaiDuLieu();
+        }
+
+        private void chkLocTonKho_CheckedChanged(object sender, EventArgs e)
+        {
+            if (chkLocTonKho.Checked)
+            {
+                var danhSach = _sanPhamBUS.LayDanhSachSanPham();
+                dgvSanPham.DataSource = danhSach.Where(x => x.SoLuong > 0).ToList();
+            }
+            else
+            {
+                TaiDuLieu();
+            }
+        }
+
+        private void dgvSanPham_CellClick(object sender, DataGridViewCellEventArgs e)
+        {
+            // Bảo vệ tránh click vào Header (RowIndex = -1) gây lỗi
+            if (e.RowIndex < 0) return;
+
+            DataGridViewRow row = dgvSanPham.Rows[e.RowIndex];
+
+            txtMaSP.Text = row.Cells["MaSP"].Value?.ToString();
+            txtTenSP.Text = row.Cells["TenSP"].Value?.ToString();
+
+            // Format hiển thị lại cho đẹp khi click ngược lại TextBox
+            if (decimal.TryParse(row.Cells["DonGia"].Value?.ToString(), out decimal gia))
+                txtDonGia.Text = gia.ToString("N0"); // 10,000
+
+            txtSoLuong.Text = row.Cells["SoLuong"].Value?.ToString();
+
+            if (row.Cells["TrangThai"].Value != null)
+                chkTrangThai.Checked = (bool)row.Cells["TrangThai"].Value;
+        }
+
+        // --- TRANG TRÍ ---
         private void TrangTriGiaoDien()
         {
-            // 1. Màu nền Form
-            this.BackColor = System.Drawing.Color.WhiteSmoke;
+            this.BackColor = Color.WhiteSmoke;
+            groupBox1.BackColor = Color.White;
+            groupBox1.ForeColor = Color.DarkBlue;
 
-            // 2. Trang trí GroupBox
-            groupBox1.BackColor = System.Drawing.Color.White;
-            groupBox1.Font = new System.Drawing.Font("Segoe UI", 10, System.Drawing.FontStyle.Regular);
-            groupBox1.ForeColor = System.Drawing.Color.DarkBlue;
-
-            // 3. Trang trí DataGridView (Bảng dữ liệu)
-            dgvSanPham.BackgroundColor = System.Drawing.Color.White;
+            // GridView
+            dgvSanPham.BackgroundColor = Color.White;
             dgvSanPham.BorderStyle = BorderStyle.None;
-            dgvSanPham.AlternatingRowsDefaultCellStyle.BackColor = System.Drawing.Color.FromArgb(238, 239, 249);
-            dgvSanPham.CellBorderStyle = DataGridViewCellBorderStyle.SingleHorizontal;
-            dgvSanPham.DefaultCellStyle.SelectionBackColor = System.Drawing.Color.DarkTurquoise;
-            dgvSanPham.DefaultCellStyle.SelectionForeColor = System.Drawing.Color.WhiteSmoke;
+            dgvSanPham.AlternatingRowsDefaultCellStyle.BackColor = Color.FromArgb(238, 239, 249);
+            dgvSanPham.DefaultCellStyle.SelectionBackColor = Color.DarkTurquoise;
+            dgvSanPham.DefaultCellStyle.SelectionForeColor = Color.WhiteSmoke;
 
-            // Chỉnh màu tiêu đề cột
             dgvSanPham.EnableHeadersVisualStyles = false;
             dgvSanPham.ColumnHeadersBorderStyle = DataGridViewHeaderBorderStyle.None;
-            dgvSanPham.ColumnHeadersDefaultCellStyle.BackColor = System.Drawing.Color.FromArgb(20, 25, 72); // Màu xanh đậm
-            dgvSanPham.ColumnHeadersDefaultCellStyle.ForeColor = System.Drawing.Color.White;
-            dgvSanPham.ColumnHeadersDefaultCellStyle.Font = new System.Drawing.Font("Segoe UI", 10, System.Drawing.FontStyle.Bold);
-            dgvSanPham.ColumnHeadersHeight = 35; // Tăng chiều cao tiêu đề
+            dgvSanPham.ColumnHeadersDefaultCellStyle.BackColor = Color.FromArgb(20, 25, 72);
+            dgvSanPham.ColumnHeadersDefaultCellStyle.ForeColor = Color.White;
+            dgvSanPham.ColumnHeadersHeight = 35;
 
-            // 4. Trang trí các Nút bấm (Button)
-            // Style nút THÊM (Màu xanh lá)
-            StyleButton(btnThem, System.Drawing.Color.ForestGreen);
-
-            // Style nút SỬA (Màu cam/vàng)
-            StyleButton(btnSua, System.Drawing.Color.Goldenrod);
-
-            // Style nút XÓA (Màu đỏ)
-            StyleButton(btnXoa, System.Drawing.Color.Crimson);
-
-            // Style nút LÀM MỚI (Màu xanh dương)
-            StyleButton(btnLamMoi, System.Drawing.Color.SteelBlue);
-
-            // Style nút TÌM KIẾM
-            StyleButton(btnTimKiem, System.Drawing.Color.DimGray);
-            // (Lưu ý: Trong code cũ của bạn nút tìm kiếm tên là button1, nếu bạn đổi tên rồi thì sửa lại nhé)
+            // Buttons
+            StyleButton(btnThem, Color.ForestGreen);
+            StyleButton(btnSua, Color.Goldenrod);
+            StyleButton(btnXoa, Color.Crimson);
+            StyleButton(btnLamMoi, Color.SteelBlue);
+            StyleButton(btnTimKiem, Color.DimGray);
         }
 
-        // Hàm phụ trợ để làm đẹp nút bấm
-        private void StyleButton(Button btn, System.Drawing.Color color)
+        private void StyleButton(Button btn, Color color)
         {
             if (btn == null) return;
             btn.FlatStyle = FlatStyle.Flat;
             btn.FlatAppearance.BorderSize = 0;
             btn.BackColor = color;
-            btn.ForeColor = System.Drawing.Color.White;
-            btn.Font = new System.Drawing.Font("Segoe UI", 9, System.Drawing.FontStyle.Bold);
-            btn.Cursor = Cursors.Hand; // Đổi con trỏ chuột thành hình bàn tay
+            btn.ForeColor = Color.White;
+            btn.Cursor = Cursors.Hand;
         }
-
     }
 }

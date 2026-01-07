@@ -9,51 +9,48 @@ namespace QLBanHang.GUI
 {
     public partial class frmInHoaDon : Form
     {
-        // Khai báo BUS để dùng cho trường hợp in từ CSDL
-        private HoaDonBUS hoaDonBUS = new HoaDonBUS();
+        private readonly HoaDonBUS _hoaDonBUS;
 
-        // Biến lưu mã hóa đơn (Dùng cho trường hợp IN LẠI hóa đơn cũ)
-        private int _maHoaDon = 0;
+        // Dùng để lưu mã hóa đơn khi muốn in lại từ DB
+        private readonly int _maHoaDon = 0;
 
-        // Biến lưu dữ liệu nguồn (Dùng cho trường hợp IN THỬ / PREVIEW)
-        private dsHoaDon _dsNguon = null;
+        // Dùng để lưu dataset khi muốn in thử (Preview)
+        private readonly dsHoaDon _dsNguon = null;
 
-        // ---------------------------------------------------------
-        // CONSTRUCTOR 1: Dùng khi IN THỬ (Nhận Dataset trực tiếp)
-        // ---------------------------------------------------------
+        /// <summary>
+        /// Constructor 1: Dùng cho chế độ PREVIEW (Không cần truy vấn DB)
+        /// </summary>
         public frmInHoaDon(dsHoaDon ds)
         {
             InitializeComponent();
-            _dsNguon = ds; // Hứng lấy dữ liệu mang sang
+            _dsNguon = ds;
         }
 
-        // ---------------------------------------------------------
-        // CONSTRUCTOR 2: Dùng khi IN THẬT (Nhận Mã HĐ để tìm trong DB)
-        // ---------------------------------------------------------
+        /// <summary>
+        /// Constructor 2: Dùng cho chế độ IN LẠI (Truy vấn theo Mã HĐ)
+        /// </summary>
         public frmInHoaDon(int maHD)
         {
             InitializeComponent();
+            _hoaDonBUS = new HoaDonBUS();
             _maHoaDon = maHD;
         }
 
         private void frmInHoaDon_Load(object sender, EventArgs e)
         {
-
             try
             {
-                // ƯU TIÊN 1: CHẾ ĐỘ PREVIEW (IN THỬ)
-                // Nếu biến _dsNguon có dữ liệu -> Hiển thị ngay và DỪNG LẠI (Return)
+                // TRƯỜNG HỢP 1: IN THỬ (Có dữ liệu nguồn truyền qua)
                 if (_dsNguon != null)
                 {
                     HienThiBaoCao(_dsNguon);
-                    return; // <--- Quan trọng: Không chạy code bên dưới nữa
+                    return;
                 }
 
-                // ƯU TIÊN 2: CHẾ ĐỘ IN TỪ DATABASE
-                // Nếu không có dữ liệu nguồn -> Gọi BUS đi tìm trong CSDL theo Mã HĐ
+                // TRƯỜNG HỢP 2: IN TỪ CSDL
                 if (_maHoaDon > 0)
                 {
-                    dsHoaDon dsDB = hoaDonBUS.LayDuLieuInHoaDon(_maHoaDon);
+                    dsHoaDon dsDB = _hoaDonBUS.LayDuLieuInHoaDon(_maHoaDon);
 
                     if (dsDB.dtHeader.Rows.Count > 0)
                     {
@@ -61,35 +58,34 @@ namespace QLBanHang.GUI
                     }
                     else
                     {
-                        MessageBox.Show("Không tìm thấy thông tin hóa đơn số: " + _maHoaDon);
-                        this.Close(); // Đóng form luôn nếu không thấy
+                        MessageBox.Show($"Không tìm thấy hóa đơn #{_maHoaDon}", "Lỗi", MessageBoxButtons.OK, MessageBoxIcon.Error);
+                        this.Close();
                     }
                 }
             }
             catch (Exception ex)
             {
-                MessageBox.Show("Lỗi hiển thị báo cáo: " + ex.Message);
+                MessageBox.Show($"Lỗi hiển thị báo cáo: {ex.Message}");
             }
         }
 
-        // Hàm chung để đẩy dữ liệu lên Report Viewer
         private void HienThiBaoCao(dsHoaDon ds)
         {
-            // 1. Reset lại report
+            // 1. Reset ReportViewer
             this.reportViewer1.Reset();
 
-            // 2. GỌI ĐÚNG TÊN FILE REPORT
-      
+            // 2. Trỏ đến file Report (đảm bảo file .rdlc nằm đúng thư mục)
             this.reportViewer1.LocalReport.ReportEmbeddedResource = "QLBanHang.GUI.rptHoaDon.rdlc";
 
-            // 3. Gán dữ liệu 
+            // 3. Xóa nguồn dữ liệu cũ
             this.reportViewer1.LocalReport.DataSources.Clear();
-            ReportDataSource rdsHeader = new ReportDataSource("dtsHeader", (DataTable)ds.dtHeader);
-            ReportDataSource rdsDetail = new ReportDataSource("dtsDetail", (DataTable)ds.dtDetail);
 
-            this.reportViewer1.LocalReport.DataSources.Add(rdsHeader);
-            this.reportViewer1.LocalReport.DataSources.Add(rdsDetail);
+            // 4. Map DataTable vào DataSource của Report
+            // Lưu ý: "dtsHeader" và "dtsDetail" phải trùng tên Dataset Name bạn đặt trong file rdlc thiết kế
+            this.reportViewer1.LocalReport.DataSources.Add(new ReportDataSource("dtsHeader", (DataTable)ds.dtHeader));
+            this.reportViewer1.LocalReport.DataSources.Add(new ReportDataSource("dtsDetail", (DataTable)ds.dtDetail));
 
+            // 5. Render
             this.reportViewer1.RefreshReport();
         }
     }

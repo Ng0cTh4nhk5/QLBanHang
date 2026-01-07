@@ -1,33 +1,39 @@
 ﻿using QLBanHang.DAL;
 using QLBanHang.DTO;
-using System;
 using System.Collections.Generic;
-using System.Linq;
-using System.Text;
-using System.Threading.Tasks;
 
 namespace QLBanHang.BUS
 {
     public class HoaDonBUS
     {
-        // Khởi tạo DAL
-        HoaDonDAL dal = new HoaDonDAL();
+        private readonly HoaDonDAL _hoaDonDAL;
 
-        public bool LuuHoaDon(HoaDonDTO hd, List<ChiTietHoaDonDTO> listChiTiet)
+        public HoaDonBUS()
         {
-            // Kiểm tra nghiệp vụ (Validation)
-            if (listChiTiet == null || listChiTiet.Count == 0)
-                return false;
-
-            // Gọi DAL để xử lý lưu xuống DB
-            return dal.LuuHoaDon(hd, listChiTiet);
+            _hoaDonDAL = new HoaDonDAL();
         }
 
-        // Trong class HoaDonBUS
+        /// <summary>
+        /// Lưu hóa đơn và chi tiết hóa đơn (Transaction)
+        /// </summary>
+        public bool LuuHoaDon(HoaDonDTO hd, List<ChiTietHoaDonDTO> listChiTiet)
+        {
+            // Kiểm tra dữ liệu đầu vào
+            if (hd == null || listChiTiet == null || listChiTiet.Count == 0)
+            {
+                return false;
+            }
+
+            return _hoaDonDAL.LuuHoaDon(hd, listChiTiet);
+        }
+
+        /// <summary>
+        /// Lấy dữ liệu để in hóa đơn (Report)
+        /// </summary>
         public dsHoaDon LayDuLieuInHoaDon(int maHD)
         {
-            // Gọi xuống DAL
-            return dal.LayDuLieuInHoaDon(maHD);
+            if (maHD <= 0) return null;
+            return _hoaDonDAL.LayDuLieuInHoaDon(maHD);
         }
     }
 }

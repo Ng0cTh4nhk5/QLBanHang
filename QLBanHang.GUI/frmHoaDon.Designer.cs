@@ -53,7 +53,7 @@
             this.cboKhachHang.FormattingEnabled = true;
             this.cboKhachHang.Location = new System.Drawing.Point(380, 41);
             this.cboKhachHang.Name = "cboKhachHang";
-            this.cboKhachHang.Size = new System.Drawing.Size(121, 28);
+            this.cboKhachHang.Size = new System.Drawing.Size(173, 28);
             this.cboKhachHang.TabIndex = 0;
             // 
             // label1
@@ -79,7 +79,7 @@
             this.cboNhanVien.FormattingEnabled = true;
             this.cboNhanVien.Location = new System.Drawing.Point(686, 41);
             this.cboNhanVien.Name = "cboNhanVien";
-            this.cboNhanVien.Size = new System.Drawing.Size(121, 28);
+            this.cboNhanVien.Size = new System.Drawing.Size(173, 28);
             this.cboNhanVien.TabIndex = 2;
             // 
             // label3
@@ -95,7 +95,7 @@
             // 
             this.textBox1.Location = new System.Drawing.Point(401, 86);
             this.textBox1.Name = "textBox1";
-            this.textBox1.Size = new System.Drawing.Size(100, 26);
+            this.textBox1.Size = new System.Drawing.Size(152, 26);
             this.textBox1.TabIndex = 5;
             // 
             // cboSanPham
@@ -103,7 +103,7 @@
             this.cboSanPham.FormattingEnabled = true;
             this.cboSanPham.Location = new System.Drawing.Point(548, 128);
             this.cboSanPham.Name = "cboSanPham";
-            this.cboSanPham.Size = new System.Drawing.Size(121, 28);
+            this.cboSanPham.Size = new System.Drawing.Size(200, 28);
             this.cboSanPham.TabIndex = 6;
             this.cboSanPham.SelectedIndexChanged += new System.EventHandler(this.cboSanPham_SelectedIndexChanged);
             // 
@@ -136,7 +136,6 @@
             this.label6.TabIndex = 11;
             this.label6.Text = "Hiển thị đơn giá";
             this.label6.TextAlign = System.Drawing.ContentAlignment.TopRight;
-            this.label6.Click += new System.EventHandler(this.label6_Click);
             // 
             // txtSoLuong
             // 
@@ -149,9 +148,8 @@
             // 
             this.txtDonGia.Location = new System.Drawing.Point(548, 171);
             this.txtDonGia.Name = "txtDonGia";
-            this.txtDonGia.Size = new System.Drawing.Size(100, 26);
+            this.txtDonGia.Size = new System.Drawing.Size(132, 26);
             this.txtDonGia.TabIndex = 15;
-            this.txtDonGia.TextChanged += new System.EventHandler(this.txtDonGia_TextChanged);
             // 
             // btnThem
             // 

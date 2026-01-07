@@ -8,12 +8,14 @@ namespace QLBanHang.DAL.Entities
     public class HoaDon
     {
         [Key]
+        [DatabaseGenerated(DatabaseGeneratedOption.Identity)] // Cấu hình tự tăng
         public int MaHD { get; set; }
 
-        public DateTime? NgayLap { get; set; }
+        public DateTime NgayLap { get; set; } // Ngày lập hóa đơn không nên null
 
-        public int MaNV { get; set; } // Khóa ngoại (chưa cần map relation vội)
+        // Chỉ giữ lại int thuần túy
+        public int MaNV { get; set; }
 
-        public int MaKH { get; set; } // Khóa ngoại
+        public int MaKH { get; set; }
     }
 }
