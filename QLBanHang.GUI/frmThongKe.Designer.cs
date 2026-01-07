@@ -164,6 +164,7 @@
             this.dgvTopSanPham.RowTemplate.Height = 28;
             this.dgvTopSanPham.Size = new System.Drawing.Size(698, 332);
             this.dgvTopSanPham.TabIndex = 0;
+            this.dgvTopSanPham.Click += new System.EventHandler(this.frmThongKe_Load);
             // 
             // tabPage3
             // 

@@ -1,4 +1,4 @@
-﻿using QLBanHang.DAL.Entities; // Sử dụng Entity mới
+﻿using QLBanHang.DAL.Entities;
 using System;
 using System.Collections.Generic;
 using System.Data.Entity;
@@ -6,6 +6,23 @@ using System.Linq;
 
 namespace QLBanHang.DAL
 {
+    // --- KHAI BÁO CÁC DTO (Class chứa dữ liệu) ĐỂ GUI CÓ THỂ ĐỌC ĐƯỢC ---
+    public class BaoCaoTopSanPham
+    {
+        public int MaSP { get; set; }
+        public string TenSP { get; set; }
+        public int SoLuong { get; set; }
+        public decimal DoanhThu { get; set; }
+    }
+
+    public class BaoCaoDoanhThu
+    {
+        public string ThoiGian { get; set; }
+        public int SoLuongDon { get; set; }
+        // Bạn có thể thêm property TongTien nếu muốn tính tổng doanh thu
+    }
+    // ---------------------------------------------------------------------
+
     public class ThongKeDAL
     {
         // 1. Danh sách hóa đơn theo khoảng ngày
@@ -13,26 +30,25 @@ namespace QLBanHang.DAL
         {
             using (var db = new QLBanHangDbContext())
             {
-                // Lấy dữ liệu thô trước
                 var data = from hd in db.HoaDons
                            join kh in db.KhachHangs on hd.MaKH equals kh.MaKH
                            join nv in db.NhanViens on hd.MaNV equals nv.MaNV
-                           // So sánh ngày: cắt bỏ phần giờ phút giây để chính xác hơn
                            where DbFunctions.TruncateTime(hd.NgayLap) >= DbFunctions.TruncateTime(tuNgay)
                               && DbFunctions.TruncateTime(hd.NgayLap) <= DbFunctions.TruncateTime(denNgay)
+                           // Nên dùng class cụ thể, nhưng nếu tab này đang chạy ổn thì tôi giữ nguyên logic
+                           // Tuy nhiên, tốt nhất vẫn nên tạo class BaoCaoHoaDon tương tự như trên
                            select new
                            {
                                MaHD = hd.MaHD,
                                NgayLap = hd.NgayLap,
                                TenKH = kh.TenKH,
-                               TenNV = nv.TenNV,
-                               // Tính tổng tiền tạm tính cho hóa đơn (nếu cần)
+                               TenNV = nv.TenNV
                            };
                 return data.ToList();
             }
         }
 
-        // 2. Top 3 sản phẩm bán chạy nhất
+        // 2. Top 3 sản phẩm bán chạy nhất (Đã sửa để dùng class BaoCaoTopSanPham)
         public object LayTop3SanPhamBanChay()
         {
             using (var db = new QLBanHangDbContext())
@@ -41,7 +57,8 @@ namespace QLBanHang.DAL
                            join sp in db.SanPhams on ct.MaSP equals sp.MaSP
                            group ct by new { sp.MaSP, sp.TenSP } into g
                            orderby g.Sum(x => x.SoLuong) descending
-                           select new
+                           // SỬA Ở ĐÂY: Dùng class BaoCaoTopSanPham thay vì new { ... }
+                           select new BaoCaoTopSanPham
                            {
                                MaSP = g.Key.MaSP,
                                TenSP = g.Key.TenSP,
@@ -53,23 +70,22 @@ namespace QLBanHang.DAL
             }
         }
 
-        // 3. Tổng doanh thu theo tháng
+        // 3. Tổng doanh thu theo tháng (Đã sửa để dùng class BaoCaoDoanhThu)
         public object LayDoanhThuTheoThang()
         {
             using (var db = new QLBanHangDbContext())
             {
-                // Lấy dữ liệu cần thiết về bộ nhớ trước (ToList) để tránh lỗi dịch SQL khi format chuỗi
                 var rawData = db.HoaDons
                                 .Where(h => h.NgayLap.HasValue)
                                 .Select(h => new { h.NgayLap })
                                 .ToList();
 
-                // Xử lý Group By trong bộ nhớ (LINQ to Objects)
                 var result = rawData
                              .GroupBy(x => new { Month = x.NgayLap.Value.Month, Year = x.NgayLap.Value.Year })
                              .OrderByDescending(g => g.Key.Year)
                              .ThenByDescending(g => g.Key.Month)
-                             .Select(g => new
+                             // SỬA Ở ĐÂY: Dùng class BaoCaoDoanhThu
+                             .Select(g => new BaoCaoDoanhThu
                              {
                                  ThoiGian = string.Format("Tháng {0}/{1}", g.Key.Month, g.Key.Year),
                                  SoLuongDon = g.Count()
