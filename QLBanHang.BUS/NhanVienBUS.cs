@@ -18,8 +18,6 @@ namespace QLBanHang.BUS
         /// </summary>
         public List<NhanVienDTO> LayDanhSachNhanVien()
         {
-            // Gọi xuống DAL. 
-            // Lưu ý: Nếu DAL chưa sửa tên hàm "LayDanhSachKhachHang", hãy giữ nguyên hoặc vào DAL sửa lại cho đúng chuẩn.
             return _nhanVienDAL.LayDanhSachNhanVien();
         }
     }

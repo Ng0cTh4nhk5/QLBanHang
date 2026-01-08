@@ -81,7 +81,6 @@ namespace QLBanHang.GUI
             this.reportViewer1.LocalReport.DataSources.Clear();
 
             // 4. Map DataTable vào DataSource của Report
-            // Lưu ý: "dtsHeader" và "dtsDetail" phải trùng tên Dataset Name bạn đặt trong file rdlc thiết kế
             this.reportViewer1.LocalReport.DataSources.Add(new ReportDataSource("dtsHeader", (DataTable)ds.dtHeader));
             this.reportViewer1.LocalReport.DataSources.Add(new ReportDataSource("dtsDetail", (DataTable)ds.dtDetail));
 

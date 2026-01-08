@@ -5,7 +5,6 @@ using System.Linq;
 
 namespace QLBanHang.DAL
 {
-    // --- DTO dùng riêng cho báo cáo ---
     public class BaoCaoTopSanPham
     {
         public int MaSP { get; set; }

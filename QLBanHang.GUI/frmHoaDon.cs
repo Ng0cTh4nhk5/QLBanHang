@@ -257,7 +257,7 @@ namespace QLBanHang.GUI
             return ds;
         }
 
-        // Trang trí giao diện một chút cho đẹp
+        // Trang trí giao diện 
         private void TrangTriGiaoDien()
         {
             lblTongTien.ForeColor = System.Drawing.Color.Red;

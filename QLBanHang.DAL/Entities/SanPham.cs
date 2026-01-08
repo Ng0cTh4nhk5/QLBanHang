@@ -14,7 +14,6 @@ namespace QLBanHang.DAL.Entities
         [StringLength(100)]
         public string TenSP { get; set; }
 
-        // Refactor: Đổi sang non-nullable để tránh lỗi tính toán cộng trừ nhân chia
         public decimal DonGia { get; set; }
 
         public int SoLuong { get; set; }

@@ -27,7 +27,6 @@ namespace QLBanHang.BUS
         /// </summary>
         public bool ThemSanPham(SanPhamDTO sp)
         {
-            // Validation Logic (Guard Clauses)
             if (string.IsNullOrEmpty(sp.TenSP)) return false;
             if (sp.DonGia < 0) return false;
             if (sp.SoLuong < 0) return false;

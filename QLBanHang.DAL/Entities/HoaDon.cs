@@ -11,9 +11,8 @@ namespace QLBanHang.DAL.Entities
         [DatabaseGenerated(DatabaseGeneratedOption.Identity)] // Cấu hình tự tăng
         public int MaHD { get; set; }
 
-        public DateTime NgayLap { get; set; } // Ngày lập hóa đơn không nên null
+        public DateTime NgayLap { get; set; } 
 
-        // Chỉ giữ lại int thuần túy
         public int MaNV { get; set; }
 
         public int MaKH { get; set; }

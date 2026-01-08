@@ -69,7 +69,7 @@ namespace QLBanHang.DAL
         /// </summary>
         public dsHoaDon LayDuLieuInHoaDon(int maHD)
         {
-            var ds = new dsHoaDon(); // Dataset Typed bạn đã định nghĩa
+            var ds = new dsHoaDon(); // Dataset Typed đã định nghĩa
 
             using (var db = new QLBanHangDbContext())
             {
@@ -84,7 +84,7 @@ namespace QLBanHang.DAL
                 {
                     var rowHead = ds.dtHeader.NewdtHeaderRow();
                     rowHead.MaHoaDon = hdInfo.hd.MaHD;
-                    rowHead.NgayLap = hdInfo.hd.NgayLap; // Đã bỏ nullable
+                    rowHead.NgayLap = hdInfo.hd.NgayLap; 
                     rowHead.TenKhachHang = hdInfo.kh.TenKH;
                     rowHead.DiaChi = hdInfo.kh.DiaChi;
                     rowHead.SoDienThoai = hdInfo.kh.DienThoai;
